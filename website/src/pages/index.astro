@@ -57,14 +57,14 @@ const latest = releases[0] as { version: string } | undefined;
         </div>
         <svg
           class="screenshot"
-          viewBox="17 65 714 879"
+          viewBox="20 67 708 873"
           role="img"
           aria-labelledby="screenshot-title"
         >
           <title id="screenshot-title">Redmi Buds Bar showing battery levels, noise controls, and the noise cancelling strength slider.</title>
           <defs>
             <clipPath id="popover-outline" clipPathUnits="userSpaceOnUse">
-              <path d="M52 87 H343 C357 87 358 70 373 70 C388 70 389 87 403 87 H697 C714 87 727 100 727 118 V908 C727 926 714 939 696 939 H52 C34 939 21 926 21 908 V118 C21 100 34 87 52 87 Z" />
+              <path id="popover-shape" d="M54 89 H344 C357 89 361 82 367 75 Q370 72 373 72 Q377 72 380 75 C386 82 390 89 404 89 H694 A30 30 0 0 1 724 119 V906 A30 30 0 0 1 694 936 H54 A30 30 0 0 1 24 906 V119 A30 30 0 0 1 54 89 Z" />
             </clipPath>
           </defs>
           <image
@@ -74,6 +74,13 @@ const latest = releases[0] as { version: string } | undefined;
             width="752"
             height="968"
             clip-path="url(#popover-outline)"
+          />
+          <use
+            href="#popover-shape"
+            fill="none"
+            stroke="#253a42"
+            stroke-opacity="0.16"
+            stroke-width="1.2"
           />
         </svg>
         <span class="stage-note">Less reaching for your phone.</span>

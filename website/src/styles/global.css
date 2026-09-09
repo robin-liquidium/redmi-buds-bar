@@ -339,9 +339,6 @@ footer p {
     gap: 32px;
     padding: 72px 0;
   }
-  .section-heading h2 br {
-    display: none;
-  }
   .compatibility {
     gap: 35px;
   }
