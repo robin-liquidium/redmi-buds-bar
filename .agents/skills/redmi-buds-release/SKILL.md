@@ -23,7 +23,7 @@ Use the current checkout if its origin is `robin-liquidium/redmi-buds-bar`. Othe
 
 The `Release` workflow signs the app, saves draft artifacts and notarization IDs, submits to Apple, staples the app, creates the custom DMG, submits and staples the DMG, signs Sparkle's feed and ZIP, and publishes only when all checks pass.
 
-Watch the relevant run. A successful job with a draft still present means Apple is processing it, not that the release is finished. The scheduled workflow resumes drafts every 20 minutes. You may dispatch `gh workflow run release.yml -f tag=vVERSION` to check sooner. Use bounded waits, communicate meaningful status, and continue independent work while waiting. Do not dispatch overlapping jobs repeatedly.
+Watch the relevant run. A successful job with a draft still present means publication is pending. Inspect the saved phase and logs: Apple may be processing it, or GitHub may still be indexing a newly created draft. The scheduled workflow resumes drafts every 20 minutes. You may dispatch `gh workflow run release.yml -f tag=vVERSION` to check sooner. Use bounded waits, communicate meaningful status, and continue independent work while waiting. Do not dispatch overlapping jobs repeatedly.
 
 For ambiguous submissions or rejection, follow `RELEASING.md`. Report Apple's actual status and submission ID. Never claim notarization is complete while pending.
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Advance one durable GitHub draft release through Apple notarization."""
-import argparse, hashlib, html, json, os, re, shutil, subprocess, sys
+import argparse, hashlib, html, json, os, re, shutil, subprocess, sys, time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -89,7 +89,16 @@ def advance(tag):
         body = OUT / 'release-notes.md'
         body.write_text('\n'.join('- ' + c for c in metadata['changes']) + '\n\nRequires macOS 14 or later. Universal Apple silicon and Intel app.\n')
         gh('release', 'create', tag, '--verify-tag', '--draft', '--title', f"Redmi Buds Bar {metadata['version']}", '--notes-file', body, '-R', REPO)
-        current = release(tag)
+        # GitHub may return a temporary untagged draft immediately after creation.
+        for _ in range(6):
+            try:
+                current = release(tag)
+                break
+            except LookupError:
+                time.sleep(5)
+        else:
+            print('Draft created; GitHub is still indexing its tag. The next scheduled run will resume it.')
+            return
     if not current['draft']:
         print('Release already published; distribution can be finalized.')
         return
