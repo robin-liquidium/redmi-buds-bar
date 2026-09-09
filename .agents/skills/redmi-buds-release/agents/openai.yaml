@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release Redmi Buds Bar"
+  short_description: "Ship the app, website, Sparkle feed, and Homebrew"
+  default_prompt: "Use $redmi-buds-release to ship the next Redmi Buds Bar release end to end."

@@ -1,0 +1,45 @@
+---
+import Page from '../layouts/Page.astro';
+import releases from '../../public/releases.json';
+const entries = releases as {
+  version: string;
+  date: string;
+  changes: string[];
+}[];
+---
+
+<Page title="Changelog — Redmi Buds Bar">
+  <main id="main" class="prose">
+    <span class="eyebrow">A little better, bit by bit</span>
+    <h1>
+      What’s <em>new.</em>
+    </h1>
+    {entries.length ? (
+      entries.map((release) => (
+        <article class="release">
+          <div class="release-heading">
+            <h2>Version {release.version}</h2>
+            <time datetime={release.date}>{release.date}</time>
+          </div>
+          <ul>
+            {release.changes.map((change) => (
+              <li>{change}</li>
+            ))}
+          </ul>
+          <a
+            href={`https://github.com/robin-liquidium/redmi-buds-bar/releases/tag/v${release.version}`}
+          >
+            Release notes & downloads ↗
+          </a>
+        </article>
+      ))
+    ) : (
+      <p>
+        The first public release is being prepared.{' '}
+        <a href="https://github.com/robin-liquidium/redmi-buds-bar/releases">
+          Follow along on GitHub ↗
+        </a>
+      </p>
+    )}
+  </main>
+</Page>

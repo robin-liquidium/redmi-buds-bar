@@ -1,0 +1,14 @@
+.build/
+work/
+outputs/
+.DS_Store
+website/node_modules/
+website/dist/
+website/.astro/
+website/.wrangler/
+.env
+.env.*
+*.p12
+*.p8
+__pycache__/
+*.pyc

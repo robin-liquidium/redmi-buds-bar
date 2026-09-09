@@ -1,0 +1,31 @@
+name: CI
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  app:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - run: swift test
+      - run: python3 -m unittest discover -s Tests -p 'test_*.py'
+      - run: ./script/package_app.sh --universal
+      - run: lipo -verify_arch arm64 x86_64 outputs/RedmiBudsBar.app/Contents/MacOS/RedmiBudsBar
+  website:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - run: bun install --frozen-lockfile && bun run check && bun run build
+        working-directory: website
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --results=verified,unknown

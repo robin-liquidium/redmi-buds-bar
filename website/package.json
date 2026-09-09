@@ -1,0 +1,23 @@
+{
+  "name": "redmi-buds-bar-website",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "check": "astro check",
+    "deploy": "bun run build && wrangler deploy"
+  },
+  "dependencies": {
+    "@fontsource/dm-sans": "5.3.0",
+    "@fontsource/instrument-serif": "5.3.0",
+    "astro": "7.3.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "prettier": "3.9.6",
+    "prettier-plugin-astro": "1.0.0",
+    "typescript": "6",
+    "wrangler": "4.130.0"
+  }
+}

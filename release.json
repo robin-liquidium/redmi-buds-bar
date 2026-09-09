@@ -1,0 +1,12 @@
+{
+  "version": "0.1.0",
+  "build": 2,
+  "date": "2026-09-09",
+  "changes": [
+    "Control noise cancelling, transparency, and off from the menu bar.",
+    "Adjust 20 ANC positions and three transparency modes.",
+    "See earbud battery levels and case battery when available.",
+    "Keep the app ready with launch at login.",
+    "Receive signed automatic updates with Sparkle."
+  ]
+}

@@ -1,0 +1,69 @@
+---
+import '@fontsource/instrument-serif/latin-400.css';
+import '@fontsource/instrument-serif/latin-400-italic.css';
+import '@fontsource/dm-sans/latin-400.css';
+import '@fontsource/dm-sans/latin-500.css';
+import '@fontsource/dm-sans/latin-600.css';
+import '../styles/global.css';
+interface Props {
+  title?: string;
+  description?: string;
+}
+const {
+  title = 'Redmi Buds Bar — Your buds. Your controls.',
+  description = 'Noise cancelling, transparency, and battery levels for REDMI Buds 8 Pro, right in your Mac menu bar. Free and open source.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#faf6ee" />
+    <title>{title}</title>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:image"
+      content="https://buds.robin.build/images/menu.png"
+    />
+  </head>
+  <body>
+    <a class="skip" href="#main">
+      Skip to content
+    </a>
+    <div class="shell">
+      <header>
+        <a class="brand" href="/" aria-label="Redmi Buds Bar home">
+          <img src="/icon.svg" width="34" height="34" alt="" />
+          Redmi Buds Bar
+        </a>
+        <nav aria-label="Main navigation">
+          <a href="/changelog">Changelog</a>
+          <a href="https://github.com/robin-liquidium/redmi-buds-bar">
+            GitHub <span aria-hidden="true">↗</span>
+          </a>
+        </nav>
+      </header>
+      <slot />
+      <footer>
+        <span>
+          Made by <a href="https://robin.build">Robin</a>. Also behind{' '}
+          <a href="https://dayline.robin.build">Dayline</a>.
+        </span>
+        <div>
+          <a href="/privacy">Privacy</a>
+          <a href="https://github.com/robin-liquidium/redmi-buds-bar/issues">
+            Help & feedback ↗
+          </a>
+        </div>
+        <p>An independent app. Not affiliated with Xiaomi or Redmi.</p>
+      </footer>
+    </div>
+  </body>
+</html>
