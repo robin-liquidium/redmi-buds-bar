@@ -11,6 +11,16 @@ spec.loader.exec_module(release)
 
 
 class ReleaseSafetyTests(unittest.TestCase):
+    def test_finds_draft_release_without_the_public_by_tag_endpoint(self):
+        draft = {"tag_name": "v0.1.1", "draft": True, "assets": []}
+        with patch.object(release, 'gh', return_value=__import__('json').dumps([[draft]])):
+            self.assertEqual(release.release('v0.1.1'), draft)
+
+    def test_api_failure_is_not_mistaken_for_a_missing_release(self):
+        with patch.object(release, 'gh', side_effect=subprocess.CalledProcessError(1, 'gh')):
+            with self.assertRaises(subprocess.CalledProcessError):
+                release.release('v0.1.1')
+
     def test_ambiguous_submission_persists_intent_without_retrying(self):
         with tempfile.TemporaryDirectory() as tmp:
             archive = Path(tmp) / 'notary-app.zip'

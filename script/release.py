@@ -21,7 +21,13 @@ def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 def release(tag):
-    return json.loads(gh('api', f'repos/{REPO}/releases/tags/{tag}', capture=True))
+    # GitHub's by-tag endpoint omits drafts, even when their tag already exists.
+    pages = json.loads(gh('api', '--paginate', '--slurp', f'repos/{REPO}/releases?per_page=100', capture=True))
+    for page in pages:
+        for item in page:
+            if item['tag_name'] == tag:
+                return item
+    raise LookupError(f'No release for {tag}')
 
 def upload(tag, path):
     gh('release', 'upload', tag, str(path), '--clobber', '-R', REPO)
@@ -79,7 +85,7 @@ def advance(tag):
     run('git', 'merge-base', '--is-ancestor', commit, 'origin/main')
     try:
         current = release(tag)
-    except subprocess.CalledProcessError:
+    except LookupError:
         body = OUT / 'release-notes.md'
         body.write_text('\n'.join('- ' + c for c in metadata['changes']) + '\n\nRequires macOS 14 or later. Universal Apple silicon and Intel app.\n')
         gh('release', 'create', tag, '--verify-tag', '--draft', '--title', f"Redmi Buds Bar {metadata['version']}", '--notes-file', body, '-R', REPO)
