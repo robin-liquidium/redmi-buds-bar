@@ -1,5 +1,13 @@
 [
   {
+    "version": "0.1.2",
+    "build": 4,
+    "date": "2026-09-09",
+    "changes": [
+      "Keep hidden installer files below the artwork when Finder shows hidden files."
+    ]
+  },
+  {
     "version": "0.1.1",
     "build": 3,
     "date": "2026-09-09",
