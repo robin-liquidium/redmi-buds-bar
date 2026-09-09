@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Publish a verified release's feed, website, and Homebrew cask. Safe to rerun."""
-import argparse, base64, hashlib, json, os, re, shutil, subprocess, tempfile, urllib.request
+import argparse, base64, hashlib, json, os, re, shutil, subprocess, tempfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
@@ -71,8 +71,16 @@ def finalize(tag):
         run('bun', 'x', 'wrangler', 'deploy', cwd=ROOT / 'website')
         # Check exact bytes so stale deployment/cache cannot silently pass.
         for name in ['appcast.xml', 'releases.json']:
-            request = urllib.request.Request('https://buds.robin.build/' + name, headers={'Cache-Control': 'no-cache'})
-            data = urllib.request.urlopen(request, timeout=60).read()
+            command = ['curl', '--fail', '--silent', '--show-error', '--max-time', '60',
+                       '-H', 'Cache-Control: no-cache', 'https://buds.robin.build/' + name]
+            response = subprocess.run(command, capture_output=True)
+            # A newly created hostname can be missing from the local DNS resolver.
+            # Retry only DNS failures, with HTTPS DNS; certificate checks stay enabled.
+            if response.returncode == 6:
+                response = subprocess.run(command + ['--doh-url', 'https://dns.google/dns-query'], capture_output=True)
+            if response.returncode:
+                raise RuntimeError(response.stderr.decode(errors='replace'))
+            data = response.stdout
             if data != (public / name).read_bytes():
                 raise RuntimeError(f'Production {name} differs from the release')
         version = metadata['version']
