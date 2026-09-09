@@ -9,8 +9,6 @@
     "deploy": "bun run build && wrangler deploy"
   },
   "dependencies": {
-    "@fontsource/dm-sans": "5.3.0",
-    "@fontsource/instrument-serif": "5.3.0",
     "astro": "7.3.2"
   },
   "devDependencies": {

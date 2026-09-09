@@ -1,5 +1,26 @@
+@font-face {
+  font-family: 'Satoma Sans';
+  src: url('../assets/fonts/satoma-sans-400.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoma Sans';
+  src: url('../assets/fonts/satoma-sans-500.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoma Sans';
+  src: url('../assets/fonts/satoma-sans-600.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
 :root {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Satoma Sans', sans-serif;
   color: #191410;
   background: #faf6ee;
   font-synthesis: none;
@@ -66,9 +87,9 @@ nav {
   padding: 74px 0 0;
 }
 .eyebrow {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.02em;
   display: block;
   color: var(--muted);
 }
@@ -86,21 +107,22 @@ nav {
 }
 h1,
 h2 {
-  font-family: 'Instrument Serif', Georgia, serif;
-  font-weight: 400;
-  letter-spacing: -0.035em;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-wrap: balance;
 }
 h1 {
-  font-size: 100px;
-  line-height: 0.98;
+  font-size: 96px;
+  line-height: 1.05;
   margin: 28px 0 25px;
 }
 em {
-  font-weight: 400;
+  font-weight: inherit;
+  font-style: normal;
   color: var(--blue);
 }
 .intro {
-  font-size: 18px;
+  font-size: 19px;
   line-height: 1.65;
   color: var(--muted);
   margin: 0;
@@ -162,9 +184,8 @@ em {
   filter: drop-shadow(0 15px 24px #28425330) drop-shadow(0 3px 5px #28425312);
 }
 .stage-label {
-  font-family: 'Instrument Serif', Georgia, serif;
-  font-size: 22px;
-  letter-spacing: -0.015em;
+  font-size: 18px;
+  font-weight: 500;
   color: #4b5d61;
   display: flex;
   align-items: center;
@@ -187,8 +208,8 @@ em {
   gap: 60px;
 }
 h2 {
-  font-size: 52px;
-  line-height: 1.08;
+  font-size: 44px;
+  line-height: 1.15;
   margin: 18px 0 22px;
 }
 .feature-grid {
@@ -197,19 +218,18 @@ h2 {
   gap: 43px 38px;
 }
 .feature-number {
-  font-size: 10px;
-  letter-spacing: 0.09em;
+  font-size: 12px;
+  letter-spacing: 0.02em;
   color: var(--muted);
 }
 h3 {
   font-size: 19px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
+  font-weight: 600;
   margin: 12px 0 10px;
 }
 article p,
 .compatibility p {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--muted);
   line-height: 1.75;
   margin: 0;
@@ -224,7 +244,7 @@ article p,
   align-items: center;
 }
 .compatibility h2 {
-  font-size: 43px;
+  font-size: 36px;
   margin-bottom: 0;
 }
 .compatibility p + p {
@@ -239,7 +259,7 @@ article p,
   padding: 93px 0;
 }
 .install h2 {
-  font-size: 64px;
+  font-size: 56px;
   margin-top: 0;
 }
 .install .button {
@@ -284,7 +304,7 @@ footer p {
   min-height: 50vh;
 }
 .prose h1 {
-  font-size: 76px;
+  font-size: 64px;
 }
 .prose h2 {
   font-size: 34px;
@@ -343,13 +363,13 @@ footer p {
     gap: 35px;
   }
   .compatibility h2 {
-    font-size: 38px;
+    font-size: 34px;
   }
   .hero {
     padding-top: 54px;
   }
   h1 {
-    font-size: 85px;
+    font-size: 72px;
   }
   .product-stage {
     min-height: 590px;
@@ -379,7 +399,7 @@ footer p {
     padding-top: 46px;
   }
   h1 {
-    font-size: 76px;
+    font-size: clamp(40px, 10.8vw, 56px);
   }
   .intro {
     font-size: 16px;
@@ -401,7 +421,7 @@ footer p {
     border-radius: 18px;
   }
   .stage-label {
-    font-size: 19px;
+    font-size: 15px;
   }
   .screenshot {
     width: 100%;
@@ -413,7 +433,7 @@ footer p {
     gap: 32px 24px;
   }
   article p {
-    font-size: 13px;
+    font-size: 15px;
   }
   h3 {
     font-size: 18px;
@@ -422,7 +442,7 @@ footer p {
     padding: 60px 0;
   }
   h2 {
-    font-size: 43px;
+    font-size: 36px;
   }
   .compatibility {
     grid-template-columns: 1fr;
@@ -430,13 +450,13 @@ footer p {
     padding: 38px 0;
   }
   .compatibility h2 {
-    font-size: 42px;
+    font-size: 34px;
   }
   .install {
     padding: 65px 0;
   }
   .install h2 {
-    font-size: 48px;
+    font-size: 36px;
   }
   .install code {
     font-size: 10px;
@@ -446,7 +466,7 @@ footer p {
     margin: 50px auto 65px;
   }
   .prose h1 {
-    font-size: 60px;
+    font-size: 44px;
   }
   .release-heading {
     align-items: flex-start;
