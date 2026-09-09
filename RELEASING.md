@@ -47,6 +47,6 @@ For `_rejected`, inspect `xcrun notarytool log ID` and fix the actual issue. Nev
 
 ## Release checks
 
-Verify `codesign --verify --deep --strict`, `lipo -verify_arch arm64 x86_64`, `xcrun stapler validate`, and Gatekeeper. Verify the signed feed and ZIP with Sparkle's `sign_update --account redmi-buds-bar --verify` tool. A feed signature is not a completed end-user upgrade: test an actual older installed version through Check for updates when changing the updater integration.
+Verify `codesign --verify --deep --strict`, `lipo -archs` (both `arm64` and `x86_64`), `xcrun stapler validate`, and Gatekeeper. Verify the signed feed and ZIP with Sparkle's `sign_update --account redmi-buds-bar --verify` tool. A feed signature is not a completed end-user upgrade: test an actual older installed version through Check for updates when changing the updater integration.
 
 The app uses `SMAppService.mainApp` for its optional launch-at-login setting. Register only the app installed at a stable path. If macOS returns `requiresApproval`, the settings menu exposes a button to Login Items; do not claim the setting is enabled until the service reports `.enabled`.

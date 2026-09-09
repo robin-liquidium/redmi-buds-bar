@@ -100,7 +100,6 @@ def advance(tag):
         raise RuntimeError(f'{phase}: inspect Apple submission history; do not resubmit. See RELEASING.md.')
     if phase == 'building':
         run('./script/package_app.sh', '--universal')
-        run('lipo', '-verify_arch', 'arm64', 'x86_64', OUT / 'RedmiBudsBar.app/Contents/MacOS/RedmiBudsBar')
         path = OUT / 'notary-app.zip'
         path.unlink(missing_ok=True)
         run('ditto', '-c', '-k', '--sequesterRsrc', '--keepParent', OUT / 'RedmiBudsBar.app', path)

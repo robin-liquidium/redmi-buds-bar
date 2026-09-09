@@ -14,6 +14,12 @@ fi
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
 cp "$BUILD_DIR/RedmiBudsBar" "$APP/Contents/MacOS/"
+if [[ "${1:-}" == --universal ]]; then
+  ARCHITECTURES="$(lipo -archs "$APP/Contents/MacOS/RedmiBudsBar")"
+  [[ "$ARCHITECTURES" == "arm64 x86_64" || "$ARCHITECTURES" == "x86_64 arm64" ]] || {
+    echo "Expected a universal app, got: $ARCHITECTURES" >&2; exit 2;
+  }
+fi
 cp Resources/AppIcon.icns "$APP/Contents/Resources/"
 ditto "$BUILD_DIR/Sparkle.framework" "$APP/Contents/Frameworks/Sparkle.framework"
 FRAMEWORK="$APP/Contents/Frameworks/Sparkle.framework"

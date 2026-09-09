@@ -10,7 +10,6 @@ jobs:
       - run: swift test
       - run: python3 -m unittest discover -s Tests -p 'test_*.py'
       - run: ./script/package_app.sh --universal
-      - run: lipo -verify_arch arm64 x86_64 outputs/RedmiBudsBar.app/Contents/MacOS/RedmiBudsBar
   website:
     runs-on: ubuntu-latest
     steps:
