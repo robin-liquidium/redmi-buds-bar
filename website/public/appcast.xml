@@ -1,2 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"><channel><title>Redmi Buds Bar updates</title><link>https://buds.robin.build/appcast.xml</link><description>Signed updates for Redmi Buds Bar.</description><language>en</language></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><!-- sparkle-sign-warning:
+IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires re-signing this file with generate_appcast or sign_update! The signed signature will be embedded at the end of this file.
+--><rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>Redmi Buds Bar updates</title>
+        <link>https://buds.robin.build/appcast.xml</link>
+        <description>Signed updates for Redmi Buds Bar.</description>
+        <language>en</language>
+        <item>
+            <title>0.1.1</title>
+            <pubDate>Wed, 09 Sep 2026 10:09:17 +0000</pubDate>
+            <sparkle:version>3</sparkle:version>
+            <sparkle:shortVersionString>0.1.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul><li>Control noise cancelling, transparency, and off from the menu bar.</li><li>Adjust 20 ANC positions and three transparency modes.</li><li>See earbud battery levels and case battery when available.</li><li>Keep the app ready with launch at login.</li><li>Receive signed automatic updates with Sparkle.</li></ul>]]></description>
+            <enclosure url="https://github.com/robin-liquidium/redmi-buds-bar/releases/download/v0.1.1/RedmiBudsBar-0.1.1.zip" length="1573222" type="application/octet-stream" sparkle:edSignature="fqdTc3/H7G05AWFNVveviMA25Cd06MhDOftGWe3UGdtf2IFj6aqSAynnGpVsRskFRepUeJ5WhKC+yxCjxWI1Cw=="></enclosure>
+        </item>
+    </channel>
+</rss><!-- sparkle-signatures:
+edSignature: BSm1gV8jtxbFTZ7EzoUFaYr4zWzRVlvpQ7GxNE/WXdNZID73a5x+gFTK4xM5ewu8me8iObttBn+UoVKJWjzBDg==
+length: 1618
+-->
