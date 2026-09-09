@@ -55,15 +55,27 @@ const latest = releases[0] as { version: string } | undefined;
         <div class="stage-label">
           <span class="tiny-line"></span> Everything you need. Right here.
         </div>
-        <div class="screenshot">
-          <img
-            src="/images/menu.png"
-            alt="Redmi Buds Bar showing battery levels, noise control buttons, and a noise cancelling strength slider."
+        <svg
+          class="screenshot"
+          viewBox="17 65 714 879"
+          role="img"
+          aria-labelledby="screenshot-title"
+        >
+          <title id="screenshot-title">Redmi Buds Bar showing battery levels, noise controls, and the noise cancelling strength slider.</title>
+          <defs>
+            <clipPath id="popover-outline" clipPathUnits="userSpaceOnUse">
+              <path d="M52 87 H343 C357 87 358 70 373 70 C388 70 389 87 403 87 H697 C714 87 727 100 727 118 V908 C727 926 714 939 696 939 H52 C34 939 21 926 21 908 V118 C21 100 34 87 52 87 Z" />
+            </clipPath>
+          </defs>
+          <image
+            href="/images/menu.png"
+            x="0"
+            y="0"
             width="752"
             height="968"
-            fetchpriority="high"
+            clip-path="url(#popover-outline)"
           />
-        </div>
+        </svg>
         <span class="stage-note">Less reaching for your phone.</span>
       </div>
     </section>

@@ -43,7 +43,7 @@ For `_rejected`, inspect `xcrun notarytool log ID` and fix the actual issue. Nev
 
 `./script/package_app.sh --universal` makes an ad-hoc development bundle in `outputs/`. Set `SIGNING_IDENTITY` to the Developer ID identity for distribution signing. The script embeds and signs Sparkle inside out.
 
-`./script/package_dmg.sh` packages the existing bundle using `Resources/DMGBackground.png`. It does not notarize by itself. The release workflow notarizes and staples both artifacts.
+`./script/package_dmg.sh` packages the existing bundle using `Resources/DMGBackground.svg`, rendered into a multi-resolution TIFF at 1× and 2× for crisp Retina text. It does not notarize by itself. The release workflow notarizes and staples both artifacts.
 
 ## Release checks
 

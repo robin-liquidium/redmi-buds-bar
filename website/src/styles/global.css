@@ -153,25 +153,13 @@ em {
   min-height: 630px;
 }
 .screenshot {
+  display: block;
   width: 366px;
   max-width: 100%;
-  height: 438px;
-  margin: 29px auto 23px;
-  position: relative;
-  overflow: hidden;
-  border-radius: 15px;
-  box-shadow:
-    0 25px 65px #28425330,
-    0 5px 12px #28425312;
-}
-.screenshot img {
-  position: absolute;
-  width: calc(100% * 752 / 710);
-  max-width: none;
   height: auto;
-  left: calc(-100% * 21 / 710);
-  top: 0;
-  transform: translateY(-8.8843%);
+  margin: 29px auto 23px;
+  overflow: visible;
+  filter: drop-shadow(0 15px 24px #28425330) drop-shadow(0 3px 5px #28425312);
 }
 .stage-label {
   font-family: 'Instrument Serif', Georgia, serif;
@@ -421,7 +409,7 @@ footer p {
   .screenshot {
     width: 100%;
     height: auto;
-    aspect-ratio: 710 / 850;
+
     margin: 23px auto;
   }
   .feature-grid {
