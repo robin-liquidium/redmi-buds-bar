@@ -27,6 +27,7 @@ rm -f "$DMG"
 create-dmg --volname 'Redmi Buds Bar' --volicon Resources/AppIcon.icns \
   --background "$ARTWORK/background.tiff" --window-pos 200 120 --window-size 640 440 \
   --icon-size 112 --text-size 14 --icon RedmiBudsBar.app 160 200 \
+  --icon .background 160 1000 --icon .VolumeIcon.icns 480 1000 \
   --hide-extension RedmiBudsBar.app --app-drop-link 480 200 --filesystem APFS \
   "$DMG" "$STAGE"
 codesign --force --timestamp --sign "$SIGNING_IDENTITY" "$DMG"
