@@ -1,5 +1,16 @@
 [
   {
+    "version": "0.3.0",
+    "build": 6,
+    "date": "2026-09-10",
+    "changes": [
+      "Control music from the menu bar with artwork, track and artist details, and the source app.",
+      "Play, pause, skip tracks, return to the previous track, and seek without opening the music app.",
+      "Keep playback controls visually steady when pausing or resuming.",
+      "Reduce background resource use by loading controls on demand, releasing closed views and media caches, and reusing appropriately sized artwork."
+    ]
+  },
+  {
     "version": "0.2.0",
     "build": 5,
     "date": "2026-09-10",

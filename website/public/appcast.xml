@@ -9,6 +9,15 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         <description>Signed updates for Redmi Buds Bar.</description>
         <language>en</language>
         <item>
+            <title>0.3.0</title>
+            <pubDate>Thu, 10 Sep 2026 10:24:28 +0000</pubDate>
+            <sparkle:version>6</sparkle:version>
+            <sparkle:shortVersionString>0.3.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul><li>Control music from the menu bar with artwork, track and artist details, and the source app.</li><li>Play, pause, skip tracks, return to the previous track, and seek without opening the music app.</li><li>Keep playback controls visually steady when pausing or resuming.</li><li>Reduce background resource use by loading controls on demand, releasing closed views and media caches, and reusing appropriately sized artwork.</li></ul>]]></description>
+            <enclosure url="https://github.com/robin-liquidium/redmi-buds-bar/releases/download/v0.3.0/RedmiBudsBar-0.3.0.zip" length="1819945" type="application/octet-stream" sparkle:edSignature="NFP9jHcc+qbO2Ox+x18vr04R4aURvsBd9NvK3bCoYXLgSwyjRtUYQnwQS0cFcwnxFsjCS/dXbfyuJR9t3ytNAA=="/>
+        </item>
+        <item>
             <title>0.2.0</title>
             <pubDate>Thu, 10 Sep 2026 09:22:27 +0000</pubDate>
             <sparkle:version>5</sparkle:version>
@@ -26,18 +35,9 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
             <description><![CDATA[<ul><li>Keep hidden installer files below the artwork when Finder shows hidden files.</li></ul>]]></description>
             <enclosure url="https://github.com/robin-liquidium/redmi-buds-bar/releases/download/v0.1.2/RedmiBudsBar-0.1.2.zip" length="1573195" type="application/octet-stream" sparkle:edSignature="sz+b7x4keTaUqL3PkOZMnS1W9bOkqFRrT0FzV03eRN4wGb3PkROzTJ0DKl2RmyE7selGoa7L0UUesUi4Lq6ZBg=="/>
         </item>
-        <item>
-            <title>0.1.1</title>
-            <pubDate>Wed, 09 Sep 2026 10:09:17 +0000</pubDate>
-            <sparkle:version>3</sparkle:version>
-            <sparkle:shortVersionString>0.1.1</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <description><![CDATA[<ul><li>Control noise cancelling, transparency, and off from the menu bar.</li><li>Adjust 20 ANC positions and three transparency modes.</li><li>See earbud battery levels and case battery when available.</li><li>Keep the app ready with launch at login.</li><li>Receive signed automatic updates with Sparkle.</li></ul>]]></description>
-            <enclosure url="https://github.com/robin-liquidium/redmi-buds-bar/releases/download/v0.1.1/RedmiBudsBar-0.1.1.zip" length="1573222" type="application/octet-stream" sparkle:edSignature="fqdTc3/H7G05AWFNVveviMA25Cd06MhDOftGWe3UGdtf2IFj6aqSAynnGpVsRskFRepUeJ5WhKC+yxCjxWI1Cw=="/>
-        </item>
     </channel>
 </rss>
 <!-- sparkle-signatures:
-edSignature: dsFajJaOFs/U5+3uQphnnc7YM9+PZXEY811RMKi/0Z3TEJ6YSGA5Cs0v6DudbtCBgj6XbhsQKc6kh99VsBqKAg==
-length: 3367
+edSignature: 6bFUH9zuI6Ph0rSzKDUrnQC+eWJTcdiUYfaLBdWGOKrT8m2DlkvBWUjtM7IOqxxt8wP/9zG5TTK1UqPr99CJBA==
+length: 3488
 -->
