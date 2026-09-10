@@ -1,8 +1,10 @@
 {
-  "version": "0.1.2",
-  "build": 4,
-  "date": "2026-09-09",
+  "version": "0.2.0",
+  "build": 5,
+  "date": "2026-09-10",
   "changes": [
-    "Keep hidden installer files below the artwork when Finder shows hidden files."
+    "Show the menu bar icon only while REDMI Buds 8 Pro are connected, with a saved setting to always show it.",
+    "Detect Bluetooth connection changes every two seconds while keeping battery refreshes at 30 seconds.",
+    "Reopen the app to access controls and settings while the menu bar icon is hidden."
   ]
 }

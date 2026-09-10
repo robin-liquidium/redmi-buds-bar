@@ -4,6 +4,9 @@ import ServiceManagement
 import Sparkle
 
 final class AppSettings: ObservableObject {
+    @Published var alwaysShowMenuBarIcon = UserDefaults.standard.bool(forKey: "alwaysShowMenuBarIcon") {
+        didSet { UserDefaults.standard.set(alwaysShowMenuBarIcon, forKey: "alwaysShowMenuBarIcon") }
+    }
     @Published private(set) var launchAtLogin = false
     @Published private(set) var needsLoginApproval = false
     @Published private(set) var canCheckForUpdates = false

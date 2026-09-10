@@ -6,6 +6,7 @@ import IOBluetooth
 public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMMChannelDelegate {
     @Published public private(set) var status = "Looking for your buds…"
     @Published public private(set) var connected = false
+    @Published public private(set) var bluetoothConnected = false
     @Published public private(set) var noise: NoiseSetting?
     @Published public private(set) var left: Battery?
     @Published public private(set) var right: Battery?
@@ -29,6 +30,7 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
     private var ancStrength: UInt8 = 19 // Initial value verified on this model; updated from actual reads.
     private var transparencyStrength: UInt8 = 0
     private var refreshTicks = 0
+    private var connectionRetryTicks = 0
     private var stopped = false
     private var queue: [(opcode: UInt8, payload: [UInt8], completion: (Packet?) -> Void)] = []
     private var pending: (opcode: UInt8, sequence: UInt8, completion: (Packet?) -> Void)?
@@ -37,31 +39,48 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
     public func start() {
         stopped = false
         timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
+        timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
             guard let self else { return }
+            let wasBluetoothConnected = self.bluetoothConnected
+            self.updateBluetoothConnection()
             if self.connected {
                 if self.device?.isConnected() != true { self.disconnect("Buds disconnected"); return }
                 self.refreshTicks += 1
-                if self.refreshTicks >= 6 { self.refreshTicks = 0; self.refresh() }
-            } else if !self.connecting { self.connect() }
+                if self.refreshTicks >= 15 { self.refreshTicks = 0; self.refresh() }
+            } else if !self.connecting {
+                self.connectionRetryTicks += 1
+                // Connect immediately on detection, but space failed attempts six seconds apart.
+                if (!wasBluetoothConnected && self.bluetoothConnected) || self.connectionRetryTicks >= 3 {
+                    self.connectionRetryTicks = 0
+                    self.connect()
+                }
+            }
         }
+        timer?.tolerance = 0.2
         connect()
     }
     public func stop() {
         stopped = true
         timer?.invalidate(); timer = nil
         disconnect("Disconnected")
+        bluetoothConnected = false
     }
     public func reconnect() {
         disconnect("Reconnecting…")
         stopped = false
         connect()
     }
+    @discardableResult
+    private func updateBluetoothConnection() -> IOBluetoothDevice? {
+        let buds = (IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice])?.first(where: {
+            ($0.name ?? "").localizedCaseInsensitiveContains("REDMI Buds 8 Pro") && $0.isConnected()
+        })
+        if bluetoothConnected != (buds != nil) { bluetoothConnected = buds != nil }
+        return buds
+    }
     private func connect() {
         guard !stopped, !connecting, !connected else { return }
-        guard let buds = (IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice])?.first(where: {
-            ($0.name ?? "").localizedCaseInsensitiveContains("REDMI Buds 8 Pro") && $0.isConnected()
-        }) else { status = "Connect REDMI Buds 8 Pro in Bluetooth settings"; return }
+        guard let buds = updateBluetoothConnection() else { status = "Connect REDMI Buds 8 Pro in Bluetooth settings"; return }
         device = buds
         connecting = true
         lastError = nil

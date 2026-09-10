@@ -24,9 +24,12 @@ Requires macOS 14 or later. Public releases contain a universal app for Apple si
 - Device state refresh on opening the popover and every 30 seconds.
 - Acknowledges device notifications and reads back the current mode.
 - Reconnects the control channel when the already-paired buds reconnect to the Mac.
+- Checks Bluetooth connection status every 2 seconds, with 0.2 seconds of timer tolerance to help macOS save power. Battery and control polling stays at 30 seconds.
 - Confirms a mode change only after the earbuds acknowledge it and a separate query matches it.
 
-Click the earbuds icon in the menu bar. The app runs without a Dock icon. Use the settings menu to enable **Launch at login**, manage automatic updates, or check for a new version.
+The earbuds icon appears in the menu bar only while your REDMI Buds 8 Pro are connected. Enable **Always show menu bar icon** in the settings menu to keep it visible when disconnected. The preference is saved across launches and is off by default. Reopen the app from Applications while the icon is hidden to access its controls and settings.
+
+The app runs without a Dock icon. Use the settings menu to enable **Launch at login**, manage automatic updates, or check for a new version.
 
 ## Build and run
 

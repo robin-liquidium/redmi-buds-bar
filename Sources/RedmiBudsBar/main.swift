@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 import SwiftUI
 import BudsCore
 
@@ -49,6 +50,7 @@ struct BudsView: View {
                 }.disabled(buds.changing)
                 Spacer()
                 Menu {
+                    Toggle("Always show menu bar icon", isOn: $settings.alwaysShowMenuBarIcon)
                     Toggle("Launch at login", isOn: Binding(get: { settings.launchAtLogin }, set: settings.setLaunchAtLogin))
                     if settings.needsLoginApproval {
                         Button("Allow in Login Items…", action: settings.openLoginSettings)
@@ -109,6 +111,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var settings: AppSettings!
     var statusItem: NSStatusItem!
     let popover = NSPopover()
+    private var visibilityObservation: AnyCancellable?
+    private var controlsWindow: NSWindow?
     var logFile: FileHandle?
     func applicationDidFinishLaunching(_ notification: Notification) {
         let logURL = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask)[0].appendingPathComponent("Logs/RedmiBudsBar.log")
@@ -121,6 +125,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             try? file.write(contentsOf: Data("\(ISO8601DateFormatter().string(from: Date())) \(line)\n".utf8))
         }
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+        statusItem.isVisible = false
         if let button = statusItem.button {
             button.image = NSImage(systemSymbolName: "earbuds", accessibilityDescription: "Redmi Buds controls")
             button.image?.isTemplate = true
@@ -133,16 +138,48 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         settings = AppSettings()
         if CommandLine.arguments.contains("--enable-login") { settings.setLaunchAtLogin(true) }
         buds.log?("Launch at login: enabled=\(settings.launchAtLogin), needsApproval=\(settings.needsLoginApproval)")
+        popover.contentViewController = makeContentController()
+        visibilityObservation = buds.$bluetoothConnected.combineLatest(settings.$alwaysShowMenuBarIcon)
+            .map { connected, alwaysShow in connected || alwaysShow }
+            .removeDuplicates()
+            .sink { [weak self] visible in
+                guard let self else { return }
+                if !visible { self.popover.performClose(nil) }
+                self.statusItem.isVisible = visible
+            }
+        buds.start()
+        if CommandLine.arguments.contains("--show") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { self.showControls() }
+        }
+    }
+    private func makeContentController() -> NSHostingController<BudsView> {
         let hosting = NSHostingController(rootView: BudsView(buds: buds, settings: settings, checkForUpdates: { [weak self] in
             self?.popover.performClose(nil)
             DispatchQueue.main.async { self?.settings.checkForUpdates() }
         }))
         hosting.sizingOptions = [.preferredContentSize]
-        popover.contentViewController = hosting
-        buds.start()
-        if CommandLine.arguments.contains("--show") {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { self.togglePopover() }
+        return hosting
+    }
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        showControls()
+        return false
+    }
+    private func showControls() {
+        if statusItem.isVisible {
+            if !popover.isShown { togglePopover() }
+            return
         }
+        if controlsWindow == nil {
+            let window = NSWindow(contentViewController: makeContentController())
+            window.title = "Redmi Buds Bar"
+            window.styleMask = [.titled, .closable]
+            window.isReleasedWhenClosed = false
+            window.center()
+            controlsWindow = window
+        }
+        controlsWindow?.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+        settings.refreshLoginStatus()
     }
     @objc func togglePopover() {
         if popover.isShown { popover.performClose(nil) }
