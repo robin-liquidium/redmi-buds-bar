@@ -14,6 +14,9 @@ Requires macOS 14 or later. Public releases contain a universal app for Apple si
 
 ## Working features
 
+- Now Playing card with artwork, track, artist, and source app, plus previous, play/pause, next, and a seek bar.
+- Click the source app name to open it. Press Space while the popover is open to play or pause.
+- Playback updates arrive as events; the media helper stops when the app's controls close.
 - Noise cancelling, transparency, and off.
 - ANC strength slider below the mode controls, with 20 manual positions.
 - Three-position transparency slider: Regular, Voice, Ambient.
@@ -45,7 +48,7 @@ The script builds a release executable, packages `outputs/RedmiBudsBar.app`, sig
 swift test
 ```
 
-Seven tests cover real captured packets, fragmentation, combined broadcasts, invalid lengths/trailers, battery sentinels, and noise command encoding.
+Fourteen tests cover real captured packets, fragmentation, combined broadcasts, invalid lengths/trailers, battery sentinels, noise command encoding, playback stream updates, artwork replacement, and playback timing.
 
 The `budsctl` executable shares the app's transport and protocol implementation. Quit the menu bar app before using it so two clients do not compete for the control channel.
 
@@ -62,6 +65,7 @@ The Codex Run action uses the same build script.
 
 ## Limits
 
+- Playback integration uses the private macOS MediaRemote framework through the bundled [MediaRemote Adapter](https://github.com/ungive/mediaremote-adapter). Future macOS updates may break it. Only media that apps publish to the system's Now Playing service is shown; controls depend on the source app's support.
 - EQ, gestures, spatial audio, and firmware updates are not exposed. Smart ANC can be turned off automatically by the strength slider, but there is no separate smart ANC switch.
 - Switching back to a mode preserves its last strength read during this app session. Before observing ANC/transparency in the current session, the defaults are the verified ANC value 19 and standard transparency 0.
 - A dash for the case means its battery is unavailable, not empty.
@@ -72,6 +76,10 @@ The Codex Run action uses the same build script.
 ## Privacy and diagnostics
 
 No account, analytics, or phone is needed. Sparkle checks for signed updates at `buds.robin.build` and downloads them from GitHub; you can disable automatic updates in settings. Bluetooth data stays on your Mac. It talks to paired devices whose name matches REDMI Buds 8 Pro, using Apple's IOBluetooth framework.
+
+Now Playing metadata and artwork stay local and are not logged. The bundled BSD-licensed media adapter runs through `/usr/bin/perl` only while the controls are visible. No media service account or browser extension is needed.
+
+Controls are created when opened and released when closed. Closing the player also clears its metadata and artwork cache. Artwork is decoded to a 128-pixel thumbnail for the 64-point Retina display, and playback changes reuse the cached artwork without re-encoding it. The progress clock runs only while a visible track is playing; the background Bluetooth check remains every 2 seconds.
 
 A local diagnostic log is written to `~/Library/Logs/RedmiBudsBar.log`, reset on launch and capped at approximately 256 KB. It contains protocol packets and status, not audio. The app never changes the Bluetooth audio route or sends firmware-update/factory-reset commands.
 

@@ -6,6 +6,7 @@ import BudsCore
 struct BudsView: View {
     @ObservedObject var buds: BudsController
     @ObservedObject var settings: AppSettings
+    @ObservedObject var media: NowPlayingController
     var checkForUpdates: () -> Void
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
@@ -40,6 +41,7 @@ struct BudsView: View {
                     HStack(spacing: 8) { ProgressView().controlSize(.small); Text("Confirming change…").font(.caption).foregroundStyle(.secondary) }
                 }
             }
+            NowPlayingView(media: media)
             if let error = settings.error ?? buds.lastError {
                 Text(error).font(.caption).foregroundStyle(.orange).fixedSize(horizontal: false, vertical: true)
             }
@@ -106,8 +108,9 @@ struct BudsView: View {
     }
 }
 
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSWindowDelegate {
     let buds = BudsController()
+    let media = NowPlayingController()
     var settings: AppSettings!
     var statusItem: NSStatusItem!
     let popover = NSPopover()
@@ -135,10 +138,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             button.setAccessibilityIdentifier("redmi.status")
         }
         popover.behavior = .transient
+        popover.delegate = self
         settings = AppSettings()
         if CommandLine.arguments.contains("--enable-login") { settings.setLaunchAtLogin(true) }
         buds.log?("Launch at login: enabled=\(settings.launchAtLogin), needsApproval=\(settings.needsLoginApproval)")
-        popover.contentViewController = makeContentController()
         visibilityObservation = buds.$bluetoothConnected.combineLatest(settings.$alwaysShowMenuBarIcon)
             .map { connected, alwaysShow in connected || alwaysShow }
             .removeDuplicates()
@@ -153,7 +156,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     private func makeContentController() -> NSHostingController<BudsView> {
-        let hosting = NSHostingController(rootView: BudsView(buds: buds, settings: settings, checkForUpdates: { [weak self] in
+        let hosting = NSHostingController(rootView: BudsView(buds: buds, settings: settings, media: media, checkForUpdates: { [weak self] in
             self?.popover.performClose(nil)
             DispatchQueue.main.async { self?.settings.checkForUpdates() }
         }))
@@ -174,23 +177,35 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             window.title = "Redmi Buds Bar"
             window.styleMask = [.titled, .closable]
             window.isReleasedWhenClosed = false
+            window.delegate = self
             window.center()
             controlsWindow = window
         }
         controlsWindow?.makeKeyAndOrderFront(nil)
+        media.start()
         NSApp.activate(ignoringOtherApps: true)
         settings.refreshLoginStatus()
     }
     @objc func togglePopover() {
         if popover.isShown { popover.performClose(nil) }
         else if let button = statusItem.button {
+            popover.contentViewController = makeContentController()
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
             NSApp.activate(ignoringOtherApps: true)
             buds.refresh()
             settings.refreshLoginStatus()
         }
     }
-    func applicationWillTerminate(_ notification: Notification) { buds.stop(); try? logFile?.close() }
+    func popoverWillShow(_ notification: Notification) { media.start() }
+    func popoverDidClose(_ notification: Notification) {
+        popover.contentViewController = nil
+        if controlsWindow?.isVisible != true { media.stop() }
+    }
+    func windowWillClose(_ notification: Notification) {
+        controlsWindow = nil
+        if !popover.isShown { media.stop() }
+    }
+    func applicationWillTerminate(_ notification: Notification) { media.stop(); buds.stop(); try? logFile?.close() }
 }
 let app = NSApplication.shared
 let delegate = AppDelegate()

@@ -21,6 +21,7 @@ if [[ "${1:-}" == --universal ]]; then
   }
 fi
 cp Resources/AppIcon.icns "$APP/Contents/Resources/"
+./script/build_media_bridge.sh "${1:-}"
 ditto "$BUILD_DIR/Sparkle.framework" "$APP/Contents/Frameworks/Sparkle.framework"
 FRAMEWORK="$APP/Contents/Frameworks/Sparkle.framework"
 # The app is not sandboxed; Sparkle documents these XPC services as optional.
@@ -43,12 +44,13 @@ p={
 with open('outputs/RedmiBudsBar.app/Contents/Info.plist','wb') as f: plistlib.dump(p,f)
 PY
 sign() {
-  if [[ "$IDENTITY" == - ]]; then codesign --force --options runtime --sign - "$1"
+  if [[ "$IDENTITY" == - ]]; then codesign --force --options 0 --sign - "$1"
   else codesign --force --timestamp --options runtime --sign "$IDENTITY" "$1"; fi
 }
 sign "$FRAMEWORK/Versions/B/Autoupdate"
 sign "$FRAMEWORK/Versions/B/Updater.app"
 sign "$FRAMEWORK"
+sign "$APP/Contents/Frameworks/MediaRemoteAdapter.framework"
 sign "$APP"
 codesign --verify --deep --strict --verbose=2 "$APP"
 echo "$APP"

@@ -1,10 +1,11 @@
 {
-  "version": "0.2.0",
-  "build": 5,
+  "version": "0.3.0",
+  "build": 6,
   "date": "2026-09-10",
   "changes": [
-    "Show the menu bar icon only while REDMI Buds 8 Pro are connected, with a saved setting to always show it.",
-    "Detect Bluetooth connection changes every two seconds while keeping battery refreshes at 30 seconds.",
-    "Reopen the app to access controls and settings while the menu bar icon is hidden."
+    "Control music from the menu bar with artwork, track and artist details, and the source app.",
+    "Play, pause, skip tracks, return to the previous track, and seek without opening the music app.",
+    "Keep playback controls visually steady when pausing or resuming.",
+    "Reduce background resource use by loading controls on demand, releasing closed views and media caches, and reusing appropriately sized artwork."
   ]
 }
