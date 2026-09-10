@@ -9,6 +9,15 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         <description>Signed updates for Redmi Buds Bar.</description>
         <language>en</language>
         <item>
+            <title>0.2.0</title>
+            <pubDate>Thu, 10 Sep 2026 09:22:27 +0000</pubDate>
+            <sparkle:version>5</sparkle:version>
+            <sparkle:shortVersionString>0.2.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul><li>Show the menu bar icon only while REDMI Buds 8 Pro are connected, with a saved setting to always show it.</li><li>Detect Bluetooth connection changes every two seconds while keeping battery refreshes at 30 seconds.</li><li>Reopen the app to access controls and settings while the menu bar icon is hidden.</li></ul>]]></description>
+            <enclosure url="https://github.com/robin-liquidium/redmi-buds-bar/releases/download/v0.2.0/RedmiBudsBar-0.2.0.zip" length="1584593" type="application/octet-stream" sparkle:edSignature="73gyEjxrusA2M72hWpwRJc2zZ2wcbG2LCcfSRqOXiFBEvG2lpM/Uo/2lrPq04Fa+zMFZDUCD4TcEASJauGiGDg=="/>
+        </item>
+        <item>
             <title>0.1.2</title>
             <pubDate>Wed, 09 Sep 2026 10:31:00 +0000</pubDate>
             <sparkle:version>4</sparkle:version>
@@ -29,6 +38,6 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
     </channel>
 </rss>
 <!-- sparkle-signatures:
-edSignature: EG9Fo0GIIYsfpE06ZA4Vc0re8efsHEfzPcdITrl4/h9kALSi1Z70YxHXRF3pvyVzQKW+VCEUZjNHDKgySUnCCQ==
-length: 2375
+edSignature: dsFajJaOFs/U5+3uQphnnc7YM9+PZXEY811RMKi/0Z3TEJ6YSGA5Cs0v6DudbtCBgj6XbhsQKc6kh99VsBqKAg==
+length: 3367
 -->
