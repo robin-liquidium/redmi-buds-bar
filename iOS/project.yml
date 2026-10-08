@@ -1,0 +1,74 @@
+name: RedmiBuds
+options:
+  deploymentTarget:
+    iOS: '26.0'
+settings:
+  base:
+    DEVELOPMENT_TEAM: 5S5288W3R7
+    CODE_SIGN_STYLE: Automatic
+    SWIFT_VERSION: '5.0'
+    MARKETING_VERSION: '0.1.0'
+    CURRENT_PROJECT_VERSION: '10'
+    TARGETED_DEVICE_FAMILY: '1'
+targets:
+  RedmiBuds:
+    type: application
+    platform: iOS
+    sources:
+      - App
+      - ../Sources/BudsCore/FirmwareService.swift
+      - Shared
+      - ../Sources/BudsCore/Protocol.swift
+      - ../Sources/BudsCore/Firmware.swift
+    dependencies:
+      - target: RedmiBudsControls
+    entitlements:
+      path: Shared/RedmiBuds.entitlements
+      properties:
+        com.apple.security.application-groups: [group.build.robin.RedmiBuds]
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Redmi Buds
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSBluetoothAlwaysUsageDescription: Connect to your REDMI Buds to control noise cancelling and transparency and show battery levels.
+        UIBackgroundModes: [bluetooth-central]
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: build.robin.RedmiBuds
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+  RedmiBudsControls:
+    type: app-extension
+    platform: iOS
+    sources:
+      - Controls
+      - Shared
+      - ../Sources/BudsCore/Protocol.swift
+      - ../Sources/BudsCore/Firmware.swift
+    entitlements:
+      path: Shared/RedmiBuds.entitlements
+      properties:
+        com.apple.security.application-groups: [group.build.robin.RedmiBuds]
+    info:
+      path: Controls/Info.plist
+      properties:
+        CFBundleDisplayName: Redmi Buds controls
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: build.robin.RedmiBuds.Controls
+        APPLICATION_EXTENSION_API_ONLY: YES
+        SKIP_INSTALL: YES
+schemes:
+  RedmiBuds:
+    build:
+      targets:
+        RedmiBuds: all

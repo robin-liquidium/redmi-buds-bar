@@ -12,3 +12,7 @@ website/.wrangler/
 *.p8
 __pycache__/
 *.pyc
+xcuserdata/
+*.xcuserstate
+
+.firecrawl/

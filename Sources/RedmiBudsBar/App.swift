@@ -8,6 +8,7 @@ struct BudsView: View {
     @ObservedObject var settings: AppSettings
     @ObservedObject var media: NowPlayingController
     var checkForUpdates: () -> Void
+    var showFirmware: () -> Void
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(spacing: 10) {
@@ -49,7 +50,7 @@ struct BudsView: View {
             HStack {
                 Button(buds.connected ? "Refresh" : "Reconnect") {
                     if buds.connected { buds.refresh() } else { buds.reconnect() }
-                }.disabled(buds.changing)
+                }.disabled(buds.changing || buds.updatingFirmware)
                 Spacer()
                 Menu {
                     Toggle("Always show menu bar icon", isOn: $settings.alwaysShowMenuBarIcon)
@@ -58,14 +59,15 @@ struct BudsView: View {
                         Button("Allow in Login Items…", action: settings.openLoginSettings)
                     }
                     Toggle("Automatic updates", isOn: Binding(get: { settings.automaticUpdates }, set: settings.setAutomaticUpdates))
-                    Button("Check for updates…", action: checkForUpdates).disabled(!settings.canCheckForUpdates)
+                    Button("Check for app updates…", action: checkForUpdates).disabled(!settings.canCheckForUpdates || buds.updatingFirmware)
+                    Button("Earbud firmware…", action: showFirmware)
                     Divider()
                     Text("Redmi Buds Bar \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "dev")")
                     if !buds.firmware.isEmpty { Text("Earbuds firmware \(buds.firmware)") }
                 } label: { Image(systemName: "gearshape") }
                 .menuStyle(.borderlessButton).fixedSize()
                 .accessibilityLabel("Settings")
-                Button("Quit") { NSApp.terminate(nil) }
+                Button("Quit") { NSApp.terminate(nil) }.disabled(buds.updatingFirmware)
             }.buttonStyle(.borderless).font(.caption)
             if !buds.connected {
                 Button("Open Bluetooth settings") {
@@ -101,23 +103,29 @@ struct BudsView: View {
             .background(selected ? Color.accentColor : Color.primary.opacity(0.055), in: RoundedRectangle(cornerRadius: 12))
         }
         .buttonStyle(.plain)
-        .disabled(!buds.connected || buds.noise == nil || buds.changing)
+        .disabled(!buds.connected || buds.noise == nil || buds.changing || buds.updatingFirmware)
         .accessibilityLabel(mode.title)
         .accessibilityValue(selected ? "Selected" : "Not selected")
         .accessibilityIdentifier("noise.\(mode.rawValue)")
     }
+
 }
 
-final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSWindowDelegate {
+@MainActor
+final class AppDelegate: NSObject, ObservableObject, NSApplicationDelegate, NSWindowDelegate {
     let buds = BudsController()
     let media = NowPlayingController()
-    var settings: AppSettings!
-    var statusItem: NSStatusItem!
-    let popover = NSPopover()
+    let firmwareUpdater = MacFirmwareUpdater()
+    let settings = AppSettings()
+    @Published var menuInserted = false
+    private var menuVisible = false
     private var visibilityObservation: AnyCancellable?
     private var controlsWindow: NSWindow?
+    private var firmwareWindow: NSWindow?
     var logFile: FileHandle?
+
     func applicationDidFinishLaunching(_ notification: Notification) {
+        NSApp.setActivationPolicy(.accessory)
         let logURL = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask)[0].appendingPathComponent("Logs/RedmiBudsBar.log")
         FileManager.default.createFile(atPath: logURL.path, contents: nil)
         logFile = try? FileHandle(forWritingTo: logURL)
@@ -127,53 +135,44 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSW
             if (try? file.offset()) ?? 0 > 262144 { try? file.truncate(atOffset: 0); try? file.seek(toOffset: 0) }
             try? file.write(contentsOf: Data("\(ISO8601DateFormatter().string(from: Date())) \(line)\n".utf8))
         }
-        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        statusItem.isVisible = false
-        if let button = statusItem.button {
-            button.image = NSImage(systemSymbolName: "earbuds", accessibilityDescription: "Redmi Buds controls")
-            button.image?.isTemplate = true
-            button.toolTip = "Redmi Buds controls"
-            button.target = self
-            button.action = #selector(togglePopover)
-            button.setAccessibilityIdentifier("redmi.status")
-        }
-        popover.behavior = .transient
-        popover.delegate = self
-        settings = AppSettings()
         if CommandLine.arguments.contains("--enable-login") { settings.setLaunchAtLogin(true) }
         buds.log?("Launch at login: enabled=\(settings.launchAtLogin), needsApproval=\(settings.needsLoginApproval)")
-        visibilityObservation = buds.$bluetoothConnected.combineLatest(settings.$alwaysShowMenuBarIcon)
-            .map { connected, alwaysShow in connected || alwaysShow }
+        visibilityObservation = buds.$bluetoothConnected.combineLatest(settings.$alwaysShowMenuBarIcon, buds.$updatingFirmware)
+            .map { connected, alwaysShow, updating in connected || alwaysShow || updating }
             .removeDuplicates()
             .sink { [weak self] visible in
-                guard let self else { return }
-                if !visible { self.popover.performClose(nil) }
-                self.statusItem.isVisible = visible
+                self?.menuInserted = visible
+                self?.buds.log?("Menu bar visibility: inserted=\(visible)")
             }
         buds.start()
         if CommandLine.arguments.contains("--show") {
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) { self.showControls() }
         }
     }
-    private func makeContentController() -> NSHostingController<BudsView> {
-        let hosting = NSHostingController(rootView: BudsView(buds: buds, settings: settings, media: media, checkForUpdates: { [weak self] in
-            self?.popover.performClose(nil)
-            DispatchQueue.main.async { self?.settings.checkForUpdates() }
-        }))
-        hosting.sizingOptions = [.preferredContentSize]
-        return hosting
+    func controlsView() -> BudsView {
+        BudsView(buds: buds, settings: settings, media: media,
+                 checkForUpdates: { [weak self] in self?.settings.checkForUpdates() },
+                 showFirmware: { [weak self] in self?.showFirmware() })
+    }
+    func menuDidOpen() {
+        menuVisible = true
+        media.start()
+        buds.refresh()
+        settings.refreshLoginStatus()
+    }
+    func menuDidClose() {
+        menuVisible = false
+        if controlsWindow?.isVisible != true { media.stop() }
     }
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        showControls()
+        if !menuVisible { showControls() }
         return false
     }
     private func showControls() {
-        if statusItem.isVisible {
-            if !popover.isShown { togglePopover() }
-            return
-        }
         if controlsWindow == nil {
-            let window = NSWindow(contentViewController: makeContentController())
+            let hosting = NSHostingController(rootView: controlsView())
+            hosting.sizingOptions = [.preferredContentSize]
+            let window = NSWindow(contentViewController: hosting)
             window.title = "Redmi Buds Bar"
             window.styleMask = [.titled, .closable]
             window.isReleasedWhenClosed = false
@@ -183,32 +182,58 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate, NSW
         }
         controlsWindow?.makeKeyAndOrderFront(nil)
         media.start()
+        buds.refresh()
         NSApp.activate(ignoringOtherApps: true)
         settings.refreshLoginStatus()
     }
-    @objc func togglePopover() {
-        if popover.isShown { popover.performClose(nil) }
-        else if let button = statusItem.button {
-            popover.contentViewController = makeContentController()
-            popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
-            NSApp.activate(ignoringOtherApps: true)
-            buds.refresh()
-            settings.refreshLoginStatus()
+    private func showFirmware() {
+        if firmwareWindow == nil {
+            let window = NSWindow(contentViewController: NSHostingController(rootView: FirmwareView(buds: buds, updater: firmwareUpdater)))
+            window.title = "Earbud firmware"
+            window.styleMask = [.titled, .closable]
+            window.isReleasedWhenClosed = false
+            window.delegate = self
+            window.center()
+            firmwareWindow = window
         }
-    }
-    func popoverWillShow(_ notification: Notification) { media.start() }
-    func popoverDidClose(_ notification: Notification) {
-        popover.contentViewController = nil
-        if controlsWindow?.isVisible != true { media.stop() }
+        firmwareWindow?.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
     }
     func windowWillClose(_ notification: Notification) {
-        controlsWindow = nil
-        if !popover.isShown { media.stop() }
+        if notification.object as? NSWindow === firmwareWindow { firmwareWindow = nil }
+        else { controlsWindow = nil }
+        if !menuVisible && controlsWindow?.isVisible != true { media.stop() }
+    }
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        buds.updatingFirmware ? .terminateCancel : .terminateNow
     }
     func applicationWillTerminate(_ notification: Notification) { media.stop(); buds.stop(); try? logFile?.close() }
 }
-let app = NSApplication.shared
-let delegate = AppDelegate()
-app.setActivationPolicy(.accessory)
-app.delegate = delegate
-app.run()
+
+@main
+struct RedmiBudsBarApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
+
+    var body: some Scene {
+        BudsMenuScene(delegate: delegate)
+    }
+}
+
+private struct BudsMenuScene: Scene {
+    @ObservedObject var delegate: AppDelegate
+
+    var body: some Scene {
+        MenuBarExtra(isInserted: Binding(get: { delegate.menuInserted }, set: { visible in
+            if delegate.menuInserted != visible { delegate.menuInserted = visible }
+        })) {
+            delegate.controlsView()
+                .onAppear { delegate.menuDidOpen() }
+                .onDisappear { delegate.menuDidClose() }
+        } label: {
+            Image(systemName: "earbuds")
+                .accessibilityLabel("Redmi Buds controls")
+                .accessibilityIdentifier("redmi.status")
+        }
+        .menuBarExtraStyle(.window)
+    }
+}

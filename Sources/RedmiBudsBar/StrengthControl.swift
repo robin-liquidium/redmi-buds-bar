@@ -26,7 +26,7 @@ struct StrengthControl: View {
                     editing = isEditing
                     if !isEditing { apply() }
                 }
-                .disabled(!buds.connected || buds.changing)
+                .disabled(!buds.connected || buds.changing || buds.updatingFirmware)
                 .accessibilityLabel(setting.mode == .anc ? "Noise cancelling strength" : "Transparency preset")
                 .accessibilityValue(setting.mode.strengthLabel(UInt8(clamping: Int(value))))
                 .accessibilityIdentifier("strength.\(setting.mode.rawValue)")
@@ -52,7 +52,7 @@ struct StrengthControl: View {
     }
 
     private func apply() {
-        guard !buds.changing, let current = buds.noise, current.mode == setting.mode else { return }
+        guard !buds.changing, !buds.updatingFirmware, let current = buds.noise, current.mode == setting.mode else { return }
         let strength = UInt8(clamping: Int(value.rounded()))
         guard strength != current.strength else { return }
         buds.setStrength(strength, for: setting.mode)

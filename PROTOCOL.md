@@ -115,7 +115,19 @@ Strength sliders were added after further live tests. Equalizer and gesture fiel
 
 A phone capture or official-app reverse engineering is a fallback if a future feature or firmware requires it. There is currently no need to extract the iOS application or flash the earbuds.
 
-## Sources
+## iPhone GATT findings — 8 October 2026
+
+The same product/firmware exposes service `AF00`, characteristic `AF07` with write-without-response, and `AF08` with notifications. Initial checks on its public LE Audio endpoint used MMA type `0xC4`, replies `0x04`, without app-layer authentication. The current controller uses the private endpoint's authenticated `0xC0`/`0x00` session described below. Framing, opcodes and noise fields match the Mac implementation.
+
+Example noise query: `FE DC BA C4 F3 00 03 01 00 0B EF`. Actual reply: `FE DC BA 04 F3 00 07 00 01 04 00 0B 01 13 EF` (ANC, strength 19).
+
+The native iPhone implementation independently confirmed transparency, off and ANC writes with F3 readbacks, restored the initial mode/strength, and repeated the check with the Mac's Bluetooth connection restored. The Mac app resumed successful RFCOMM device-info/noise reads after removing the temporary iPhone diagnostic app. These checks establish control support with multipoint enabled; they do not establish AirPods-style automatic audio routing. Apple's CoreBluetooth GATT API is used instead of the Mac's IOBluetooth RFCOMM API.
+
+Xiaomi's [connection FAQ](https://www.mi.com/global/support/faq/details/KA-666754/) describes a two-minute iOS advertising window after waking the earbuds. Save the discovered peripheral identity and reconnect it directly; a case wake may still be needed after a lost connection.
+
+See [the iPhone project](iOS/README.md). Official MMA reference: [Xiaomi protocol](https://developers.xiaoai.mi.com/api/doc/render_markdown/VoiceserviceAccess/Bluetooth/BluetoothProtocol/CommunicationProtocol).
+
+## Research sources
 
 - https://github.com/maniacx/BudsLink/blob/main/src/lib/devices/redmiBuds/redmiBudsSocket.js
 - https://github.com/maniacx/BudsLink/blob/main/src/lib/devices/redmiBuds/deviceConfigs/RedmiBuds8Pro.js
@@ -123,3 +135,36 @@ A phone capture or official-app reverse engineering is a fallback if a future fe
 - Apple's installed IOBluetooth SDK headers, especially IOBluetoothDevice and IOBluetoothRFCOMMChannel.
 
 Research source code was read for protocol facts. Live captures and the user's audible checks establish support for this specific pair; third-party feature claims remain unverified unless listed above.
+
+### iPhone discovery and reconnection
+
+The buds expose two AF00 endpoints. The public LE Audio advertisements include 184E and the REDMI name; this endpoint initially returned C4/04 noise commands. Its discovery window expired after pairing, and later reconnection required a 2-second case-button press. These short successful checks did not establish sustained operation.
+
+The current iPhone implementation selects this model’s private manufacturer-advertised endpoint (stable first six bytes 8F 03 16 01 37 A0; the following status byte varies). It performs the C0/00 MMA 50/51 authentication handshake used by Xiaomi’s app. A Swift adaptation of BudsLink’s algorithm matched a complete captured official challenge/response byte for byte. It validates the peer response, sends 51 completion, answers reciprocal 50 challenges and replies [01] to successful peer 51 requests. The authentication implementation has GPL attribution and a bundled license notice. Command payloads and authentication data are not included in app diagnostics.
+
+AF00 alone cannot select the endpoint. The controller stores an identity in the App Group only after authentication, VID/PID (2717/50E3), device info and noise reads succeed, then shares it with the controls extension. It retains verified identities through transient timeouts. A peripheral reported connected by iOS still needs the current central manager’s local connect before service access. Commands and acknowledgments queue through CoreBluetooth’s write-without-response backpressure instead of treating a full write buffer as an immediate failure.
+
+The captured stale private BLE bond returned CBError 14, “Peer removed pairing information,” while audio remained connected. Two Redmi entries existed in iPhone settings; removing the disconnected control entry repaired that bond. Current errors distinguish this condition from discovery and command timeouts.
+
+Authenticated reads and complete mode/cycle checks succeeded without another physical pairing step, with the Mac controller paused and again running. Holding the iPhone session prevented the Mac RFCOMM control channel opening, which motivated the idle-release change below. Global Mac Bluetooth and audio remained connected during isolation. Mode acknowledgments must still be checked against actual noise reads; the app never treats an acknowledgment alone as success.
+
+### Idle control-channel handoff
+
+The private BLE connection can keep MIWEAR RFCOMM from opening on the Mac even while Mac audio remains connected. Mac logs recorded repeated channel-open timeouts while the iPhone held the authenticated session. Both controllers now release their control transports after commands settle (iPhone 1 second, Mac 0.5 second), retain confirmed readings and reacquire for the next action. Neither release calls the audio device's disconnect method. CoreBluetooth ownership is tracked separately from the peripheral's system connection state. An initial authentication challenge timeout gets one delayed retry with a new nonce; authentication mismatches and setting writes are never blindly retried. Build 6 passed all direct-mode App Intents, cycling, shared icon state and original-setting restoration at 2026-10-07T22:32:34Z. iPhone diagnostics confirmed idle release at 22:32:39Z; the Mac then opened RFCOMM, read the same transparency setting and released its channel at 22:33:00Z. A fresh return-to-iPhone read passed at 22:33:09Z, followed by another successful Mac read/release at 22:33:30Z. This establishes the tested control handoff, not long-term sleep/wake reliability or AirPods-style audio routing.
+
+### Firmware OTA
+
+Xiaomi's official OTA specification is available at https://developers.xiaoai.mi.com/api/doc/render_markdown/VoiceserviceAccess/Bluetooth/BluetoothProtocol/OTAUpgrade . For product 2717/50E3, E1 returns identifier offset 0 and length 14. The official 1.2.3.7 header is `271750E31237002F3406C69BA29B`: firmware data length 3,093,510; CRC32 C69BA29B. The complete MMA image is 3,093,524 bytes. The official CDN download adds a 1,341-byte signing envelope after that declared image. The app validates the entire download against the official metadata MD5, then sends blocks only from the validated image.
+
+The guest endpoint is `https://cn.tws.wear.mi.com/twswear/device/latest_ver?locale=en_US`, POST form field `data` with JSON model `miwear.headphone.p76c`, platform `android`, app_level `1.38.0`, fw_ver and channel `prod`. Xiaomi's distributed app includes an anonymous app-client header accepted by this endpoint; personal account authentication is not required. Official metadata returned version `1.2.3_0007` and checksum `8770fe49df6fa81cd993483c04708aec`. CDN file SHA-256: `112cf364f1cff4ca801996adf19f2c0445d19fd037f50c93ddea803dc47664db`.
+
+Reassembly of the earlier Xiaomi capture yielded a complete E5 payload: 4,096 image bytes at offset 10 plus big-endian CRC32 `74ACD735`. E3 requested that offset/length with CRC enabled. E5 replied `10 00000000 0000 0032`: the TWS link between earbuds failed (0x10). Earlier E2 returned 0x12, both earbuds not in the open case; later E2 returned 3, dual-bank eligible. No completed transfer, E6 success or restart was captured.
+
+The implementation supports this dual-bank flow only. It sends requested E5 blocks, respects requested delays and BLE write limits/backpressure, avoids inserting peer acknowledgments into fragmented frames, attempts E4 exit on interrupted transfer, verifies E6 completion and reads both earbud versions after reboot. A complete 1.2.3.6 → 1.2.3.7 physical update was verified on 8 October 2026: 756 E5 blocks all matched the official image and CRCs, E6 returned 00, reboot 03/00 was acknowledged, and both versions were independently read as 1.2.3.7 at 05:08:49Z. The restart took ~80 seconds after E6, exceeding the initial three-attempt window. Build 10 waits up to two minutes (plus any in-flight request timeout) and reconciles later readback in the firmware view. Interrupted transfer cancellation/recovery remains specified and implemented but has not been physically exercised.
+
+
+### macOS firmware updater
+
+The Mac app now shares the official discovery/download service and validated MMA image parser with iOS. Its explicit Earbud firmware window runs the E1/E2/E3/E5/E6/03 dual-bank flow over Classic RFCOMM. Large frames are split at the negotiated RFCOMM MTU using asynchronous write-completion callbacks; complete frames are queued in order so peer acknowledgments cannot interrupt a fragmented E5 frame. Ordinary polling and setting writes pause during firmware operations. The app attempts E4 exit after an interrupted transfer, keeps the task alive when the window closes, prevents normal quit/idle system sleep and checks both versions for up to two minutes after reboot.
+
+On 8 October 2026, the Mac read both versions as 1.2.3.7, discovered and validated the official 3,093,524-byte image, and issued read-only E1/E2 queries. E2 rejected readiness with 0x12 (buds must be in the open charging case), as expected for that device state. No E3 entry, E5 transfer, E6 completion or reboot was sent in this Mac check. `budsctl firmware-check` never installs firmware. Nineteen tests passed, including multiple MTUs, acknowledgment ordering and failed-write queue reset. Full Mac OTA transfer and physical cancellation/recovery remain unverified; a newer official release is needed for a normal update test.

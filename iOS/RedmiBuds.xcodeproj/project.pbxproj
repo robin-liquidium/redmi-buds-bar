@@ -1,0 +1,525 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2E205E6E25E7920EDD2EB1BB /* BLEBuds.swift in Sources */ = {isa = PBXBuildFile; fileRef = D754CF544F601E7113C67A89 /* BLEBuds.swift */; };
+		48D98E8A06F4A5537E28ABFB /* BudsControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B5391F307736A526499FF /* BudsControls.swift */; };
+		50093BD2636E3F85413CE221 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 12A45700E765E8B54BFC49F1 /* Assets.xcassets */; };
+		6250710A2189D7136B4F5DB2 /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 724D62B18614166FDFF4E169 /* Protocol.swift */; };
+		62BC46B85D3B02E43C0EEF65 /* MMAAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFB455D48C0B1BFE63646D12 /* MMAAuthentication.swift */; };
+		63C11711AB607AEEFBDB4D84 /* ThirdPartyNotices.txt in Resources */ = {isa = PBXBuildFile; fileRef = D467B490BEF332A50DC59FC2 /* ThirdPartyNotices.txt */; };
+		76515639654446E27EB24407 /* DeviceVerification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527625EA4BC75647EEA5139F /* DeviceVerification.swift */; };
+		87B71F5F950FEF10981756E7 /* ThirdPartyNotices.txt in Resources */ = {isa = PBXBuildFile; fileRef = D467B490BEF332A50DC59FC2 /* ThirdPartyNotices.txt */; };
+		8827690A1976426F131249E3 /* RedmiBudsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2748BDB6BAEE7115129C343E /* RedmiBudsApp.swift */; };
+		8E64B126F5C07C9C429BCBD2 /* FirmwareService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69A9FD90529CF4F580776926 /* FirmwareService.swift */; };
+		92CAAD73DB2CB9F90958270B /* NoiseIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64DF4E37563BAC780C12BB86 /* NoiseIntents.swift */; };
+		96E9B3D1C060C6F57E2A62C6 /* RedmiBudsControls.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0FE1095CA366BDCDB89BBCC1 /* RedmiBudsControls.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		9B769F50B9C74FDFF2A6F49D /* Firmware.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D5153265C0383ACC2E1E599 /* Firmware.swift */; };
+		9E63B263253218A9BCF23A3B /* MMAAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFB455D48C0B1BFE63646D12 /* MMAAuthentication.swift */; };
+		A5E14825AF1B31C9ADBE2D5E /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 724D62B18614166FDFF4E169 /* Protocol.swift */; };
+		A7A18585AFBECF0ECC2DF962 /* BudsDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = E871F14016EDB6D3963CDDDF /* BudsDiagnostics.swift */; };
+		A975242DBA06C81044D8DF3E /* BudsDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = E871F14016EDB6D3963CDDDF /* BudsDiagnostics.swift */; };
+		C8A6D2A2C2378399BD77E79F /* NoiseIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64DF4E37563BAC780C12BB86 /* NoiseIntents.swift */; };
+		D7797F694A83FF2B7579DA15 /* Firmware.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D5153265C0383ACC2E1E599 /* Firmware.swift */; };
+		E26CA9082DE02C8851E7E455 /* NoiseControlState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91FF1392A2D9C9730DA91314 /* NoiseControlState.swift */; };
+		E94883E733D7CD385C6A7E16 /* NoiseControlState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91FF1392A2D9C9730DA91314 /* NoiseControlState.swift */; };
+		EDBC4CFFCABD4C9D89E87453 /* FirmwareUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A40224E0B111AD549413E9 /* FirmwareUpdate.swift */; };
+		FE6B7BB914F7A9E8914D1332 /* BLEBuds.swift in Sources */ = {isa = PBXBuildFile; fileRef = D754CF544F601E7113C67A89 /* BLEBuds.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		8E3D5EECBA14FA7B9040739E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 89042777E1947AF41E423AF1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A04F298955A7B586B32FE9CC;
+			remoteInfo = RedmiBudsControls;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4727BC42EB8DBF50FF4BB49F /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				96E9B3D1C060C6F57E2A62C6 /* RedmiBudsControls.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0FE1095CA366BDCDB89BBCC1 /* RedmiBudsControls.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = RedmiBudsControls.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		12A45700E765E8B54BFC49F1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2748BDB6BAEE7115129C343E /* RedmiBudsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedmiBudsApp.swift; sourceTree = "<group>"; };
+		527625EA4BC75647EEA5139F /* DeviceVerification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceVerification.swift; sourceTree = "<group>"; };
+		64DF4E37563BAC780C12BB86 /* NoiseIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoiseIntents.swift; sourceTree = "<group>"; };
+		69A9FD90529CF4F580776926 /* FirmwareService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirmwareService.swift; sourceTree = "<group>"; };
+		6DB0DF6D2A73B889B1131D87 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		724D62B18614166FDFF4E169 /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
+		81A40224E0B111AD549413E9 /* FirmwareUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirmwareUpdate.swift; sourceTree = "<group>"; };
+		91FF1392A2D9C9730DA91314 /* NoiseControlState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoiseControlState.swift; sourceTree = "<group>"; };
+		98B1F977496AA97A501F2E90 /* RedmiBuds.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RedmiBuds.entitlements; sourceTree = "<group>"; };
+		9D5153265C0383ACC2E1E599 /* Firmware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Firmware.swift; sourceTree = "<group>"; };
+		AFB455D48C0B1BFE63646D12 /* MMAAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MMAAuthentication.swift; sourceTree = "<group>"; };
+		B2A5A9AA5B0134802CF6442C /* RedmiBuds.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = RedmiBuds.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C9A17F10214D91BC50C03DD3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		CE1B5391F307736A526499FF /* BudsControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudsControls.swift; sourceTree = "<group>"; };
+		D467B490BEF332A50DC59FC2 /* ThirdPartyNotices.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ThirdPartyNotices.txt; sourceTree = "<group>"; };
+		D754CF544F601E7113C67A89 /* BLEBuds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEBuds.swift; sourceTree = "<group>"; };
+		E871F14016EDB6D3963CDDDF /* BudsDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudsDiagnostics.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		1C4A7148E0C0AFDA5B7D9C82 = {
+			isa = PBXGroup;
+			children = (
+				62BF92A6DC4C6B12E0F33188 /* App */,
+				D1973E904E553EC9F4159ED8 /* BudsCore */,
+				FEAA0288065EEE95F7B33447 /* Controls */,
+				227A18D48F5E7D1AAF5EAF67 /* Shared */,
+				6D318850F7298DF7C9BA3622 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		227A18D48F5E7D1AAF5EAF67 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				D754CF544F601E7113C67A89 /* BLEBuds.swift */,
+				E871F14016EDB6D3963CDDDF /* BudsDiagnostics.swift */,
+				AFB455D48C0B1BFE63646D12 /* MMAAuthentication.swift */,
+				91FF1392A2D9C9730DA91314 /* NoiseControlState.swift */,
+				64DF4E37563BAC780C12BB86 /* NoiseIntents.swift */,
+				98B1F977496AA97A501F2E90 /* RedmiBuds.entitlements */,
+				D467B490BEF332A50DC59FC2 /* ThirdPartyNotices.txt */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		62BF92A6DC4C6B12E0F33188 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				12A45700E765E8B54BFC49F1 /* Assets.xcassets */,
+				527625EA4BC75647EEA5139F /* DeviceVerification.swift */,
+				81A40224E0B111AD549413E9 /* FirmwareUpdate.swift */,
+				C9A17F10214D91BC50C03DD3 /* Info.plist */,
+				2748BDB6BAEE7115129C343E /* RedmiBudsApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		6D318850F7298DF7C9BA3622 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B2A5A9AA5B0134802CF6442C /* RedmiBuds.app */,
+				0FE1095CA366BDCDB89BBCC1 /* RedmiBudsControls.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D1973E904E553EC9F4159ED8 /* BudsCore */ = {
+			isa = PBXGroup;
+			children = (
+				9D5153265C0383ACC2E1E599 /* Firmware.swift */,
+				69A9FD90529CF4F580776926 /* FirmwareService.swift */,
+				724D62B18614166FDFF4E169 /* Protocol.swift */,
+			);
+			name = BudsCore;
+			path = ../Sources/BudsCore;
+			sourceTree = "<group>";
+		};
+		FEAA0288065EEE95F7B33447 /* Controls */ = {
+			isa = PBXGroup;
+			children = (
+				CE1B5391F307736A526499FF /* BudsControls.swift */,
+				6DB0DF6D2A73B889B1131D87 /* Info.plist */,
+			);
+			path = Controls;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A04F298955A7B586B32FE9CC /* RedmiBudsControls */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6A0072F58BFABB3B7E3AAEF7 /* Build configuration list for PBXNativeTarget "RedmiBudsControls" */;
+			buildPhases = (
+				F08A056390C32FE2B1E4DA03 /* Sources */,
+				13B465D476037BEDA1BAE3E0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RedmiBudsControls;
+			packageProductDependencies = (
+			);
+			productName = RedmiBudsControls;
+			productReference = 0FE1095CA366BDCDB89BBCC1 /* RedmiBudsControls.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		AFD1F0040593985510275792 /* RedmiBuds */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4FF597AA82D44F0A67569E5C /* Build configuration list for PBXNativeTarget "RedmiBuds" */;
+			buildPhases = (
+				820A801E1B6CA2CF41785265 /* Sources */,
+				ABFCECDBFBFF877699396BE5 /* Resources */,
+				4727BC42EB8DBF50FF4BB49F /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FCD07ABF7654B44FA3DAE662 /* PBXTargetDependency */,
+			);
+			name = RedmiBuds;
+			packageProductDependencies = (
+			);
+			productName = RedmiBuds;
+			productReference = B2A5A9AA5B0134802CF6442C /* RedmiBuds.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		89042777E1947AF41E423AF1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					A04F298955A7B586B32FE9CC = {
+						DevelopmentTeam = 5S5288W3R7;
+						ProvisioningStyle = Automatic;
+					};
+					AFD1F0040593985510275792 = {
+						DevelopmentTeam = 5S5288W3R7;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = B37F90ABA68C16A5AD1B857D /* Build configuration list for PBXProject "RedmiBuds" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 1C4A7148E0C0AFDA5B7D9C82;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 6D318850F7298DF7C9BA3622 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AFD1F0040593985510275792 /* RedmiBuds */,
+				A04F298955A7B586B32FE9CC /* RedmiBudsControls */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		13B465D476037BEDA1BAE3E0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				63C11711AB607AEEFBDB4D84 /* ThirdPartyNotices.txt in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ABFCECDBFBFF877699396BE5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				50093BD2636E3F85413CE221 /* Assets.xcassets in Resources */,
+				87B71F5F950FEF10981756E7 /* ThirdPartyNotices.txt in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		820A801E1B6CA2CF41785265 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2E205E6E25E7920EDD2EB1BB /* BLEBuds.swift in Sources */,
+				A7A18585AFBECF0ECC2DF962 /* BudsDiagnostics.swift in Sources */,
+				76515639654446E27EB24407 /* DeviceVerification.swift in Sources */,
+				9B769F50B9C74FDFF2A6F49D /* Firmware.swift in Sources */,
+				8E64B126F5C07C9C429BCBD2 /* FirmwareService.swift in Sources */,
+				EDBC4CFFCABD4C9D89E87453 /* FirmwareUpdate.swift in Sources */,
+				62BC46B85D3B02E43C0EEF65 /* MMAAuthentication.swift in Sources */,
+				E94883E733D7CD385C6A7E16 /* NoiseControlState.swift in Sources */,
+				92CAAD73DB2CB9F90958270B /* NoiseIntents.swift in Sources */,
+				A5E14825AF1B31C9ADBE2D5E /* Protocol.swift in Sources */,
+				8827690A1976426F131249E3 /* RedmiBudsApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F08A056390C32FE2B1E4DA03 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FE6B7BB914F7A9E8914D1332 /* BLEBuds.swift in Sources */,
+				48D98E8A06F4A5537E28ABFB /* BudsControls.swift in Sources */,
+				A975242DBA06C81044D8DF3E /* BudsDiagnostics.swift in Sources */,
+				D7797F694A83FF2B7579DA15 /* Firmware.swift in Sources */,
+				9E63B263253218A9BCF23A3B /* MMAAuthentication.swift in Sources */,
+				E26CA9082DE02C8851E7E455 /* NoiseControlState.swift in Sources */,
+				C8A6D2A2C2378399BD77E79F /* NoiseIntents.swift in Sources */,
+				6250710A2189D7136B4F5DB2 /* Protocol.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		FCD07ABF7654B44FA3DAE662 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A04F298955A7B586B32FE9CC /* RedmiBudsControls */;
+			targetProxy = 8E3D5EECBA14FA7B9040739E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		7BA35030CE4E41960911AE2F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Shared/RedmiBuds.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = build.robin.RedmiBuds;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		7CC89DBDE7698E723EAF58E1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 10;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 5S5288W3R7;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		91F8630A26AD06BB9321E331 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Shared/RedmiBuds.entitlements;
+				INFOPLIST_FILE = Controls/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = build.robin.RedmiBuds.Controls;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A8CA4169F1B049B0ED06FF4E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 10;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 5S5288W3R7;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		D438E98459637F2CA93D3E0A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Shared/RedmiBuds.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = build.robin.RedmiBuds;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E04939B398976AC51A51726C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Shared/RedmiBuds.entitlements;
+				INFOPLIST_FILE = Controls/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = build.robin.RedmiBuds.Controls;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4FF597AA82D44F0A67569E5C /* Build configuration list for PBXNativeTarget "RedmiBuds" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D438E98459637F2CA93D3E0A /* Debug */,
+				7BA35030CE4E41960911AE2F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6A0072F58BFABB3B7E3AAEF7 /* Build configuration list for PBXNativeTarget "RedmiBudsControls" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E04939B398976AC51A51726C /* Debug */,
+				91F8630A26AD06BB9321E331 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B37F90ABA68C16A5AD1B857D /* Build configuration list for PBXProject "RedmiBuds" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7CC89DBDE7698E723EAF58E1 /* Debug */,
+				A8CA4169F1B049B0ED06FF4E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 89042777E1947AF41E423AF1 /* Project object */;
+}

@@ -1,6 +1,6 @@
 # Redmi Buds Bar
 
-A small native macOS menu bar app for REDMI Buds 8 Pro. Verified with a Chinese-market pair, product ID `0x50E3`, firmware `1.2.3.6`, on 9 September 2026.
+A small native macOS menu bar app for REDMI Buds 8 Pro. Verified with a Chinese-market pair, product ID `0x50E3`, on firmware `1.2.3.6` and `1.2.3.7`.
 
 ## Download
 
@@ -11,6 +11,10 @@ brew install --cask robin-liquidium/tap/redmi-buds-bar
 ```
 
 Requires macOS 14 or later. Public releases contain a universal app for Apple silicon and Intel. Install it in Applications, pair your earbuds, and open the app.
+
+## iPhone app
+
+The native [iPhone app](iOS/README.md) uses direct Bluetooth LE for noise modes, ANC strength, transparency presets and battery levels. It includes one cycling Control Center button with a mode-specific icon, optional individual controls and Shortcuts actions. Official Xiaomi firmware discovery, download and installation work without an account; a complete 1.2.3.6 → 1.2.3.7 update was verified on the Chinese model. Requires iOS 26 or later; install from Xcode with your own development signing. The macOS download above does not include the iPhone app.
 
 ## Working features
 
@@ -23,7 +27,8 @@ Requires macOS 14 or later. Public releases contain a universal app for Apple si
 - Moving ANC strength turns off smart ANC when necessary, with acknowledgment and readback.
 - Strength changes are sent when a drag finishes; keyboard adjustments also work.
 - Left/right battery levels; case battery when the earbuds report it.
-- Firmware version.
+- Both earbud firmware versions.
+- Official Xiaomi firmware checks, validated downloads and an explicit firmware update action in **Settings → Earbud firmware…**. No Xiaomi account is needed.
 - Device state refresh on opening the popover and every 30 seconds.
 - Acknowledges device notifications and reads back the current mode.
 - Reconnects the control channel when the already-paired buds reconnect to the Mac.
@@ -32,7 +37,15 @@ Requires macOS 14 or later. Public releases contain a universal app for Apple si
 
 The earbuds icon appears in the menu bar only while your REDMI Buds 8 Pro are connected. Enable **Always show menu bar icon** in the settings menu to keep it visible when disconnected. The preference is saved across launches and is off by default. Reopen the app from Applications while the icon is hidden to access its controls and settings.
 
-The app runs without a Dock icon. Use the settings menu to enable **Launch at login**, manage automatic updates, or check for a new version.
+The menu uses SwiftUI's native MenuBarExtra window style, letting macOS draw its outer shape and material. Packaging records the actual build SDK while retaining the macOS 14 deployment target, so current macOS versions use their current appearance. The app runs without a Dock icon. Use the settings menu to enable **Launch at login**, manage automatic updates, or check for a new version.
+
+## Earbud firmware
+
+Open the menu bar app's gear menu and choose **Earbud firmware…**. Check for updates, download the official firmware, then choose **Update earbuds**. Charge both earbuds and the case, put both earbuds in the case with its lid open, and disconnect the buds from your iPhone and other devices during the update. The Mac app keeps the transfer running if its firmware window closes and prevents idle system sleep until it finishes.
+
+The updater supports the Chinese REDMI Buds 8 Pro model (2717/50E3) and its dual-bank update flow. It validates Xiaomi's download, reads the buds' readiness response, sends the blocks they request and confirms both versions after reboot. Firmware is installed only after you choose **Update earbuds**.
+
+Mac checks, official downloads and read-only readiness queries were verified on 8 October 2026. A complete update using the same image format and protocol was verified on iPhone. A complete Mac transfer and interrupted-transfer recovery await a newer firmware release; this implementation has not been physically tested flashing the buds from the Mac. The installed pair is already on 1.2.3.7.
 
 ## Build and run
 
@@ -48,11 +61,12 @@ The script builds a release executable, packages `outputs/RedmiBudsBar.app`, sig
 swift test
 ```
 
-Fourteen tests cover real captured packets, fragmentation, combined broadcasts, invalid lengths/trailers, battery sentinels, noise command encoding, playback stream updates, artwork replacement, and playback timing.
+Nineteen tests cover real captured packets, fragmentation, combined broadcasts, invalid lengths/trailers, battery sentinels, noise command encoding, playback stream updates, artwork replacement, and playback timing, firmware integrity and version validation, and serialized firmware-frame writes across different Bluetooth MTUs.
 
 The `budsctl` executable shares the app's transport and protocol implementation. Quit the menu bar app before using it so two clients do not compete for the control channel.
 
 ```sh
+swift run budsctl firmware-check   # discovery/download/readiness only; never installs
 swift run budsctl status
 swift run budsctl transparency
 swift run budsctl off
@@ -66,7 +80,7 @@ The Codex Run action uses the same build script.
 ## Limits
 
 - Playback integration uses the private macOS MediaRemote framework through the bundled [MediaRemote Adapter](https://github.com/ungive/mediaremote-adapter). Future macOS updates may break it. Only media that apps publish to the system's Now Playing service is shown; controls depend on the source app's support.
-- EQ, gestures, spatial audio, and firmware updates are not exposed. Smart ANC can be turned off automatically by the strength slider, but there is no separate smart ANC switch.
+- EQ, gestures and spatial audio are not exposed. Smart ANC can be turned off automatically by the strength slider, but there is no separate smart ANC switch.
 - Switching back to a mode preserves its last strength read during this app session. Before observing ANC/transparency in the current session, the defaults are the verified ANC value 19 and standard transparency 0.
 - A dash for the case means its battery is unavailable, not empty.
 - Reconnect handling is implemented; repeated sleep/wake and multipoint handoff behavior still need daily-use testing.
@@ -75,13 +89,13 @@ The Codex Run action uses the same build script.
 
 ## Privacy and diagnostics
 
-No account, analytics, or phone is needed. Sparkle checks for signed updates at `buds.robin.build` and downloads them from GitHub; you can disable automatic updates in settings. Bluetooth data stays on your Mac. It talks to paired devices whose name matches REDMI Buds 8 Pro, using Apple's IOBluetooth framework.
+No account, analytics, or phone is needed. Sparkle checks for signed updates at `buds.robin.build` and downloads them from GitHub; you can disable automatic updates in settings. Firmware checks and downloads contact Xiaomi's official service and CDN. Bluetooth data stays on your Mac. It talks to paired devices whose name matches REDMI Buds 8 Pro, using Apple's IOBluetooth framework.
 
 Now Playing metadata and artwork stay local and are not logged. The bundled BSD-licensed media adapter runs through `/usr/bin/perl` only while the controls are visible. No media service account or browser extension is needed.
 
 Controls are created when opened and released when closed. Closing the player also clears its metadata and artwork cache. Artwork is decoded to a 128-pixel thumbnail for the 64-point Retina display, and playback changes reuse the cached artwork without re-encoding it. The progress clock runs only while a visible track is playing; the background Bluetooth check remains every 2 seconds.
 
-A local diagnostic log is written to `~/Library/Logs/RedmiBudsBar.log`, reset on launch and capped at approximately 256 KB. It contains protocol packets and status, not audio. The app never changes the Bluetooth audio route or sends firmware-update/factory-reset commands.
+A local diagnostic log is written to `~/Library/Logs/RedmiBudsBar.log`, reset on launch and capped at approximately 256 KB. It contains protocol packets and status, not audio. Firmware operations log command metadata rather than firmware payloads. The app sends firmware-installation commands only after the explicit **Update earbuds** action and never sends factory-reset commands. Normal controls preserve the Bluetooth audio connection; an explicit firmware check or update can reconnect the paired buds when needed.
 
 ## Research and attribution
 

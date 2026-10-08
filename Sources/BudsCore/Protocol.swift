@@ -53,6 +53,29 @@ public struct Packet: Equatable {
     }
 }
 
+/// Keeps complete MMA frames ordered while RFCOMM writes finish asynchronously.
+public struct MMAFrameQueue {
+    private var frames: [(bytes: [UInt8], offset: Int)] = []
+    private var inFlight = 0
+    public init() {}
+    public mutating func append(_ frame: [UInt8]) {
+        if !frame.isEmpty { frames.append((frame, 0)) }
+    }
+    public mutating func nextChunk(maximum: Int) -> [UInt8]? {
+        guard inFlight == 0, maximum > 0, let frame = frames.first else { return nil }
+        let end = min(frame.offset + maximum, frame.bytes.count)
+        inFlight = end - frame.offset
+        return Array(frame.bytes[frame.offset..<end])
+    }
+    public mutating func completed(success: Bool) {
+        guard success else { self = MMAFrameQueue(); return }
+        guard inFlight > 0, !frames.isEmpty else { return }
+        frames[0].offset += inFlight
+        inFlight = 0
+        if frames[0].offset == frames[0].bytes.count { frames.removeFirst() }
+    }
+}
+
 /// RFCOMM is a byte stream: a callback may contain part of a packet or several packets.
 public struct PacketDecoder {
     private var buffer: [UInt8] = []
@@ -65,7 +88,10 @@ public struct PacketDecoder {
             guard buffer.count >= 7 else { break }
             let isRequest = buffer[3] & 0x80 != 0
             let length = Int(buffer[5]) << 8 | Int(buffer[6])
-            guard length >= (isRequest ? 1 : 2), length <= 4096 else { buffer.removeFirst(); continue }
+            // Only outgoing OTA data frames need the larger UInt16 payload range.
+            // Keep corrupt lengths from blocking resynchronization of ordinary replies.
+            let maximum = isRequest && buffer[4] == 0xe5 ? 65535 : 4096
+            guard length >= (isRequest ? 1 : 2), length <= maximum else { buffer.removeFirst(); continue }
             let total = length + 8
             guard buffer.count >= total else { break }
             guard buffer[total - 1] == 0xef else { buffer.removeFirst(); continue }

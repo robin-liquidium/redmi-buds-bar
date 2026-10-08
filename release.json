@@ -1,11 +1,11 @@
 {
-  "version": "0.3.0",
-  "build": 6,
-  "date": "2026-09-10",
+  "version": "0.4.0",
+  "build": 7,
+  "date": "2026-10-08",
   "changes": [
-    "Control music from the menu bar with artwork, track and artist details, and the source app.",
-    "Play, pause, skip tracks, return to the previous track, and seek without opening the music app.",
-    "Keep playback controls visually steady when pausing or resuming.",
-    "Reduce background resource use by loading controls on demand, releasing closed views and media caches, and reusing appropriately sized artwork."
+    "Check, download and install official REDMI Buds 8 Pro firmware from the Mac without a Xiaomi account.",
+    "Use the native macOS menu window and background while keeping the familiar battery, noise and playback controls.",
+    "Release idle control connections so Mac and iPhone controls can take turns without disconnecting audio.",
+    "Add the iPhone app source with direct noise controls, Control Center cycling, diagnostics and firmware updates."
   ]
 }
