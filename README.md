@@ -48,7 +48,7 @@ Choose **Settings → Earbud settings…** on Mac or **Earbud settings** on iPho
 - In-ear detection, dual connection and automatic call answering.
 - Adaptive ANC, adaptive sound and low latency.
 - Dimensional audio, head tracking, audio preference and scene presets.
-- Default, Bass, Voice, Treble and Custom EQ, with ten frequency bands and the gain limit reported by the buds.
+- Default, Bass, Voice, Treble and Custom EQ, with ten frequency bands and the gain limit reported by the buds. Select Custom before editing its bands.
 - An explicit ear tip fit test and find sound. Find refuses to start while either bud reports being worn; Use Stop sound to stop it sooner and keep the app open for the 30-second stop request.
 
 Opening settings only reads. Every persistent change reads fresh state, writes only the selected field, and independently verifies the result. Unsupported settings are omitted. The menu's existing design is unchanged.

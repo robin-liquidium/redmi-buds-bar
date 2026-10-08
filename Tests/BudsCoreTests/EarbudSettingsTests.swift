@@ -5,7 +5,7 @@ final class EarbudSettingsTests: XCTestCase {
     private func tlv(_ id: UInt16, _ data: [UInt8]) -> [UInt8] { [UInt8(data.count + 2), UInt8(id >> 8), UInt8(id & 255)] + data }
     private let gestures: [UInt8] = [4, 8, 8, 1, 8, 8, 2, 8, 8, 3, 8, 8, 5, 11, 11, 99, 7, 9]
     private func settings(_ extra: [UInt8] = [], runInfo: [UInt8] = []) throws -> EarbudSettings {
-        try EarbudSettings(payload: tlv(2, gestures) + tlv(10, [7, 6]) + tlv(3, [0]) + tlv(4, [1]) + extra, runInfo: runInfo)
+        try EarbudSettings(payload: tlv(2, gestures) + tlv(10, [7, 6]) + tlv(3, [0]) + tlv(4, [1]) + tlv(7, [10]) + extra, runInfo: runInfo)
     }
     func testEditingOneSidePreservesOtherSideAndUnknownGestures() throws {
         let before = try settings()
@@ -71,6 +71,11 @@ final class EarbudSettingsTests: XCTestCase {
         XCTAssertFalse(EarTipFit.mayFind(tlv(12, [255])))
         XCTAssertFalse(EarTipFit.mayFind([]))
         XCTAssertTrue(EarTipFit.mayFind(tlv(12, [0])))
+    }
+    func testEQEditingRequiresCustomPreset() throws {
+        let data: [UInt8] = [1, 10, 6, 6, 0, 0, 1, 3, 232, 0]
+        let defaults = try EarbudSettings(payload: tlv(2, gestures) + tlv(7, [0]) + tlv(0x37, data))
+        XCTAssertThrowsError(try defaults.change(.equalizerBand(1000, 2)))
     }
     func testModelEqualizerReplyHasTenBandsAndSixDBLimit() throws {
         let data: [UInt8] = [1, 10, 6, 6, 0, 0, 10, 0, 62, 0, 0, 125, 0, 0, 250, 0, 1, 244, 0, 3, 232, 0, 7, 208, 0, 15, 160, 0, 31, 64, 0, 46, 224, 0, 62, 128, 0]

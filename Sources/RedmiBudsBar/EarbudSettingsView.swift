@@ -84,11 +84,11 @@ struct EarbudSettingsView: View {
                             Text("Default").tag(UInt8(0)); Text("Bass").tag(UInt8(5)); Text("Voice").tag(UInt8(1))
                             Text("Treble").tag(UInt8(6)); Text("Custom").tag(UInt8(10))
                         }
-                        if let eq = settings.equalizer {
+                        if value[0] == 10, let eq = settings.equalizer {
                             ForEach(eq.bands, id: \.frequency) { band in
                                 EqualizerBandView(band: band, bound: eq.bound) { edit(.equalizerBand(band.frequency, $0)) }
                             }
-                            Text("Changing a band selects Custom and preserves the other bands.").font(.caption).foregroundStyle(.secondary)
+                            Text("Release a slider to save. Other bands are preserved.").font(.caption).foregroundStyle(.secondary)
                         }
                     }
                 }

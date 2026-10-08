@@ -165,7 +165,7 @@ public struct EarbudSettings: Equatable {
             }
             id = 7; data = [preset]; expected = data
         case let .equalizerBand(frequency, gain):
-            guard let eq = equalizer, let index = eq.bands.firstIndex(where: { $0.frequency == frequency }), (-eq.bound...eq.bound).contains(gain) else {
+            guard values[7] == [10], let eq = equalizer, let index = eq.bands.firstIndex(where: { $0.frequency == frequency }), (-eq.bound...eq.bound).contains(gain) else {
                 throw FirmwareFailure("That equalizer band or gain is unavailable.")
             }
             id = 0x37
