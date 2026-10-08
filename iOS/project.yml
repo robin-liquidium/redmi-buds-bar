@@ -8,30 +8,34 @@ settings:
     CODE_SIGN_STYLE: Automatic
     SWIFT_VERSION: '5.0'
     MARKETING_VERSION: '0.1.0'
-    CURRENT_PROJECT_VERSION: '10'
+    CURRENT_PROJECT_VERSION: '11'
     TARGETED_DEVICE_FAMILY: '1'
+    BUDS_APP_GROUP: group.build.robin.RedmiBuds
 targets:
   RedmiBuds:
     type: application
     platform: iOS
     sources:
       - App
+      - ../Sources/RedmiBudsBar/EarbudSettingsView.swift
       - ../Sources/BudsCore/FirmwareService.swift
       - Shared
       - ../Sources/BudsCore/Protocol.swift
       - ../Sources/BudsCore/Firmware.swift
+      - ../Sources/BudsCore/EarbudSettings.swift
     dependencies:
       - target: RedmiBudsControls
     entitlements:
       path: Shared/RedmiBuds.entitlements
       properties:
-        com.apple.security.application-groups: [group.build.robin.RedmiBuds]
+        com.apple.security.application-groups: ['$(BUDS_APP_GROUP)']
     info:
       path: App/Info.plist
       properties:
         CFBundleDisplayName: Redmi Buds
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        BudsAppGroupIdentifier: $(BUDS_APP_GROUP)
         NSBluetoothAlwaysUsageDescription: Connect to your REDMI Buds to control noise cancelling and transparency and show battery levels.
         UIBackgroundModes: [bluetooth-central]
         UILaunchScreen: {}
@@ -50,16 +54,18 @@ targets:
       - Shared
       - ../Sources/BudsCore/Protocol.swift
       - ../Sources/BudsCore/Firmware.swift
+      - ../Sources/BudsCore/EarbudSettings.swift
     entitlements:
       path: Shared/RedmiBuds.entitlements
       properties:
-        com.apple.security.application-groups: [group.build.robin.RedmiBuds]
+        com.apple.security.application-groups: ['$(BUDS_APP_GROUP)']
     info:
       path: Controls/Info.plist
       properties:
         CFBundleDisplayName: Redmi Buds controls
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        BudsAppGroupIdentifier: $(BUDS_APP_GROUP)
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:

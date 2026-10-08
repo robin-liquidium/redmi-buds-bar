@@ -12,6 +12,24 @@ import Foundation
             try await buds.connect()
             original = buds.noise
             lines.append("Connected: firmware=\(buds.firmware), left=\(buds.left?.percent ?? -1), right=\(buds.right?.percent ?? -1)")
+            if ProcessInfo.processInfo.arguments.contains("--verify-settings") {
+                try await buds.readEarbudSettings()
+                if let settings = buds.earbudSettings {
+                    for side in EarbudSide.allCases {
+                        for kind in EarbudGesture.allCases {
+                            lines.append("GESTURE \(side.title) \(kind.title)=\(settings.action(kind, side: side).map(String.init) ?? "unavailable")")
+                        }
+                        lines.append("NOISE CYCLE \(side.title)=\(settings.noiseMask(side).map(String.init) ?? "unavailable")")
+                    }
+                    for id: UInt16 in [3, 4, 7, 0x1d, 0x25, 0x29, 0x2f, 0x36, 0x37, 0x68, 6] {
+                        lines.append("CONFIG \(String(format: "%04X", id))=\(settings.value(id)?.map { String(format: "%02X", $0) }.joined(separator: " ") ?? "unavailable")")
+                    }
+                    lines.append("IN-EAR DETECTION=\(settings.wearDetection.map(String.init) ?? "unavailable")")
+                }
+                lines.append("PASS: read-only settings; no settings written")
+                write(lines)
+                return
+            }
             if ProcessInfo.processInfo.arguments.contains("--verify-firmware-readiness") {
                 let release = try await FirmwareService.latest(current: buds.firmware)
                 let image = try await FirmwareService.download(release)
@@ -47,6 +65,11 @@ import Foundation
             }
             succeeded = true
         } catch { lines.append("FAILED: \(error.localizedDescription)") }
+        if ProcessInfo.processInfo.arguments.contains("--verify-settings") {
+            lines.append("FAIL: read-only settings check; no settings written")
+            write(lines)
+            return
+        }
         if let original {
             do {
                 try await buds.setMode(original.mode, strength: original.mode == .off ? nil : original.strength)

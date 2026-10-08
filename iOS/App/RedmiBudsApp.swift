@@ -82,6 +82,7 @@ struct BudsView: View {
                     Section { Text(error).foregroundStyle(.orange) }
                 }
                 Section {
+                    NavigationLink("Earbud settings") { EarbudSettingsView(buds: buds) }
                     NavigationLink {
                         FirmwareView(buds: buds)
                     } label: { LabeledContent("Firmware", value: buds.firmware) }
@@ -96,7 +97,7 @@ struct BudsView: View {
             guard phase == .active else { return }
             BudsDiagnostics.record("appOpened")
             #if DEBUG
-            if ProcessInfo.processInfo.arguments.contains("--verify-noise") || ProcessInfo.processInfo.arguments.contains("--verify-connection") || ProcessInfo.processInfo.arguments.contains("--verify-firmware-readiness") {
+            if ProcessInfo.processInfo.arguments.contains("--verify-settings") || ProcessInfo.processInfo.arguments.contains("--verify-noise") || ProcessInfo.processInfo.arguments.contains("--verify-connection") || ProcessInfo.processInfo.arguments.contains("--verify-firmware-readiness") {
                 await DeviceVerification.run(buds)
                 syncStrength()
                 return

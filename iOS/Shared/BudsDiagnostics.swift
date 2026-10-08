@@ -8,7 +8,7 @@ enum BudsDiagnostics {
     private static let session = UUID().uuidString
     private static let logger = Logger(subsystem: "build.robin.RedmiBuds", category: "Diagnostics")
     private static let file: URL? = {
-        guard let group = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.build.robin.RedmiBuds") else { return nil }
+        guard let group = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: BudsAppGroup.identifier) else { return nil }
         let directory = group.appendingPathComponent("Library/Diagnostics", isDirectory: true)
         do {
             let initialDirectory = group.appendingPathComponent("Diagnostics", isDirectory: true)

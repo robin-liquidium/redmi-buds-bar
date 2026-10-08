@@ -21,13 +21,13 @@ The final distribution step runs on a Mac with `gh`, `bun`, Homebrew, Swift, and
 
 ## Release sequence
 
-1. Update `release.json`; run tests, universal packaging, website checks/build, and code review.
+1. Update `release.json`; run tests, universal Mac packaging, `python3 script/package_ios.py`, website checks/build, and code review.
 2. Commit/push main, wait for CI, then tag the exact commit `vVERSION` and push the tag.
-3. The Release workflow creates a draft and submits the signed universal app ZIP. Its state and exact artifact are uploaded to the draft.
+3. The Release workflow creates a draft, builds and verifies the unsigned device IPA and Control Center extension with the tagged version/build, uploads the IPA and signing instructions, and submits the signed universal app ZIP. Its state and exact artifact are uploaded to the draft.
 4. While Apple says `In Progress`, the workflow returns without blocking a runner. The scheduled workflow retries every 20 minutes. `gh workflow run release.yml -f tag=vVERSION` resumes sooner.
 5. After app acceptance, it restores the same archive, staples and validates the app, makes the final Sparkle ZIP, creates the styled DMG, and submits that DMG separately.
-6. After DMG acceptance, it staples and validates it, signs the Sparkle archive/feed/release notes, uploads versioned and stable-name DMGs, checksums, and notarization evidence, then publishes the release.
-7. Run `python3 script/finalize_release.py vVERSION` on Robin's Mac. It verifies signatures/checksums, updates the feed and changelog, deploys the website, checks live bytes, updates the cask, and fetches it with Homebrew. This is part of the release skill, not an unattended GitHub Actions step.
+6. After DMG acceptance, it staples and validates it, signs the Sparkle archive/feed/release notes, uploads versioned and stable-name DMGs, checksums (including the IPA and signing guide), and notarization evidence, then publishes the release.
+7. Run `python3 script/finalize_release.py vVERSION` on Robin's Mac. It verifies signatures/checksums and the public IPA/extension, updates the feed and changelog, deploys the website, checks live bytes, updates the cask, and fetches it with Homebrew. This is part of the release skill, not an unattended GitHub Actions step.
 
 GitHub's scheduled workflows can be delayed or disabled after inactivity; manual dispatch remains available. Only one release may be in flight. Do not start the next version until distribution of the current one is complete.
 
@@ -44,6 +44,8 @@ For `_rejected`, inspect `xcrun notarytool log ID` and fix the actual issue. Nev
 `./script/package_app.sh --universal` makes an ad-hoc development bundle in `outputs/`. Set `SIGNING_IDENTITY` to the Developer ID identity for distribution signing. The script embeds and signs Sparkle inside out.
 
 `./script/package_dmg.sh` packages the existing bundle using `Resources/DMGBackground.svg`, rendered into a multi-resolution TIFF at 1× and 2× for crisp Retina text. It does not notarize by itself. The release workflow notarizes and staples both artifacts.
+
+`python3 script/package_ios.py` builds `outputs/RedmiBuds-VERSION-unsigned.ipa` and `outputs/iOS-Sideloading.md`. This is a physical iOS Release build containing both the app and controls extension. `script/verify_ios_package.py` rejects simulator executables, missing controls, mismatched metadata, signatures and provisioning profiles. All public assets are checksummed. Sideloading requires the user's own signing and App Group provisioning; see [iOS signing instructions](iOS/SIDELOADING.md). Never upload private development profiles or claim that unsigned packaging proves a successful sideload.
 
 ## Release checks
 

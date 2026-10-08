@@ -4,7 +4,7 @@ import WidgetKit
 /// Shared, confirmed state for the Control Center label; never used to choose the next mode.
 enum NoiseControlState {
     static let kind = "build.robin.RedmiBuds.cycle"
-    static let group = "group.build.robin.RedmiBuds"
+    static let group = BudsAppGroup.identifier
     private static let key = "confirmedNoiseMode"
     static func load() -> NoiseMode? {
         guard let value = UserDefaults(suiteName: group)?.object(forKey: key) as? Int,

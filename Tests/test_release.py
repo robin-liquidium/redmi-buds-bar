@@ -1,5 +1,6 @@
 import importlib.util
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -7,7 +8,8 @@ from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location('release', Path(__file__).parents[1] / 'script/release.py')
 release = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(release)
+with patch.object(sys, "path", [str(Path(__file__).parents[1] / "script"), *sys.path]):
+    spec.loader.exec_module(release)
 
 
 class ReleaseSafetyTests(unittest.TestCase):

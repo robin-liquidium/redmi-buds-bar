@@ -111,7 +111,7 @@ The popover sizes itself to its SwiftUI content. Sliders appear only in their co
 
 ## Further work
 
-Strength sliders were added after further live tests. Equalizer and gesture fields still need model-specific read/write validation. Do not infer that a generic Xiaomi profile proves every capability on this firmware.
+Strength sliders were added after further live tests. The model-specific gesture, EQ and feature reads below have been verified; new writes and transient sound/test tools still need manual device verification. Do not infer that a generic Xiaomi profile proves every capability on this firmware.
 
 A phone capture or official-app reverse engineering is a fallback if a future feature or firmware requires it. There is currently no need to extract the iOS application or flash the earbuds.
 
@@ -168,3 +168,21 @@ The implementation supports this dual-bank flow only. It sends requested E5 bloc
 The Mac app now shares the official discovery/download service and validated MMA image parser with iOS. Its explicit Earbud firmware window runs the E1/E2/E3/E5/E6/03 dual-bank flow over Classic RFCOMM. Large frames are split at the negotiated RFCOMM MTU using asynchronous write-completion callbacks; complete frames are queued in order so peer acknowledgments cannot interrupt a fragmented E5 frame. Ordinary polling and setting writes pause during firmware operations. The app attempts E4 exit after an interrupted transfer, keeps the task alive when the window closes, prevents normal quit/idle system sleep and checks both versions for up to two minutes after reboot.
 
 On 8 October 2026, the Mac read both versions as 1.2.3.7, discovered and validated the official 3,093,524-byte image, and issued read-only E1/E2 queries. E2 rejected readiness with 0x12 (buds must be in the open charging case), as expected for that device state. No E3 entry, E5 transfer, E6 completion or reboot was sent in this Mac check. `budsctl firmware-check` never installs firmware. Nineteen tests passed, including multiple MTUs, acknowledgment ordering and failed-write queue reset. Full Mac OTA transfer and physical cancellation/recovery remain unverified; a newer official release is needed for a normal update test.
+
+
+## Earbud settings (2717/50E3, firmware 1.2.3.7)
+
+Independent Mac RFCOMM and iPhone authenticated BLE reads on 8 October 2026 agree:
+
+- F3 / 0002 returns triples `[gesture, left action, right action]`: gesture 4 single tap, 1 double tap, 2 triple tap, 3 hold, 5 swipe. The pair returns action 8 (None) for all taps/holds and 11 (volume) for swipes. p76c's catalog permits tap actions 8/1/2/3/4/5, hold 8/0/6, swipe 8/11.
+- F2 edits one gesture using an FF sentinel for the untouched side. Readback checks every record, including unknown gesture IDs and the untouched side; record order may change.
+- 000A is left/right noise-cycle bit masks: Off=1, ANC=2, Transparency=4. At least two bits must be selected. The pair reports 6/6.
+- 0003 automatic answer=0, 0004 multipoint=1, 0007 EQ preset=0, 001D spatial bitfield=0, 0025 adaptive ANC=0, 0029 adaptive sound=0, 002F low latency=0, 0036 scene=`00 01`, 0006 fit result=`00 00`.
+- Spatial 001D uses bit0 enabled, bits1–2 audio preference (0 quality, 1 latency), bit3 head tracking. Preserve the preference when changing modes. 0068 selects Xiaomi/Dolby engine; the p76c catalog lists choices 0/1. Its readback must be present and valid before edits are enabled.
+- 0037 EQ reply is `[1, mode, upper bound, lower bound, EQ ID, name length, name..., band count, (frequency BE16, signed-magnitude gain)*]`. This pair reports 10 bands: 62/125/250/500/1000/2000/4000/8000/12000/16000 Hz, gain bound 6, all gains zero. Negative gain encodes as `128 + magnitude`. Custom writes use header `[1,10,1,1,1,0,count]` and preserve all other frequencies/gains; readback compares mode and every band, not response-only header bytes.
+- In-ear detection reads 09 with mask `00 00 04 00`, response attribute 0A: 0 enabled, 1 disabled. Its 08 write is `[02,06,inverted boolean]`, followed by independent 09 readback. It is not an F2 config toggle.
+- Explicit fit test uses F2 / 0005 `[1]`, then polls 0006 after the test delay; 1 good, 2 poor, 9 not worn. Find uses F2 / 0009 `[enabled,ear ID]`, ear ID 1 left/2 right/3 both. Before starting a find sound, F3 / 000C must affirm both in-ear bits (3/2) clear. Stop sends `[0,3]` without requiring the out-of-ear condition.
+
+The model does not answer F3 / 0008 (generic firmware name); including it in a combined query also times out. The shipped settings screen omits this query. Reads are individual and serialized. OS Bluetooth nicknames are distinct from supported earbud configuration.
+
+No supported call hang-up override was found in the model catalog, public protocol or SDK setting types. Media gesture None must not be presented as disabling call handling: this pair already has all taps/holds set to None and the user still reports accidental hang-ups. Do not write guessed config IDs or reinterpret the SDK's unrelated lab listening-duration setting as call control. No proprietary implementation source is bundled.

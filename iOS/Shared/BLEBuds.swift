@@ -35,6 +35,7 @@ final class BLEBuds: NSObject, ObservableObject, @preconcurrency CBCentralManage
     private var transparencyStrength: UInt8 = 0
     private var refreshing = false
     private var quietConnection = false
+    @Published private(set) var earbudSettings: EarbudSettings?
     private var refreshWaiters: [CheckedContinuation<Void, Never>] = []
     private var openingControls = false
     private var initializing = false
@@ -50,7 +51,7 @@ final class BLEBuds: NSObject, ObservableObject, @preconcurrency CBCentralManage
     private var failedPeripherals: Set<UUID> = []
     private var unverifiedRestored: [CBPeripheral] = []
     private let logger = Logger(subsystem: "build.robin.RedmiBuds", category: "Bluetooth")
-    private let preferences = UserDefaults(suiteName: "group.build.robin.RedmiBuds") ?? .standard
+    private let preferences = UserDefaults(suiteName: BudsAppGroup.identifier) ?? .standard
     private let controlCacheKey = "budsAuthenticatedPeripheral"
     private var releasingIdleConnection = false
     private var ownsConnection = false
@@ -456,6 +457,74 @@ final class BLEBuds: NSObject, ObservableObject, @preconcurrency CBCentralManage
         if actual.mode == .anc { ancStrength = actual.strength }
         if actual.mode == .transparency { transparencyStrength = actual.strength }
         return actual
+    }
+
+    func readEarbudSettings() async throws { try await settingsOperation(nil, action: nil) }
+    func editEarbudSetting(_ edit: EarbudEdit) async throws { try await settingsOperation(edit, action: nil) }
+    @Published private(set) var earbudActionResult: String?
+    func performEarbudAction(_ action: EarbudAction) async throws -> String {
+        try await settingsOperation(nil, action: action)
+        return earbudActionResult ?? "Done"
+    }
+    private func settingsOperation(_ edit: EarbudEdit?, action: EarbudAction?) async throws {
+        guard !updatingFirmware else { throw Failure(message: "Wait for the firmware update to finish.") }
+        try await connect()
+        if refreshing { await withCheckedContinuation { refreshWaiters.append($0) } }
+        guard !changing, !updatingFirmware, pending == nil else { throw Failure(message: "Wait for the current earbud operation to finish.") }
+        changing = true; error = nil
+        idleTimeout?.invalidate(); idleTimeout = nil
+        defer { changing = false; releaseWhenIdle() }
+        do {
+            try await readDeviceInfo()
+            if let action {
+                earbudActionResult = nil
+                switch action {
+                case .fitTest:
+                    _ = try await request(0xf2, [3, 0, 5, 1])
+                    try await Task.sleep(for: .seconds(5))
+                    for _ in 0..<10 {
+                        if let result = EarTipFit.results(try await request(0xf3, [0, 6]).payload) { earbudActionResult = result; return }
+                        try await Task.sleep(for: .seconds(1))
+                    }
+                    throw FirmwareFailure("The fit test did not return a result. Wear both earbuds and try again.")
+                case let .find(side):
+                    guard [UInt8(1), 2, 3].contains(side), EarTipFit.mayFind(try await request(0xf3, [0, 12]).payload) else {
+                        throw FirmwareFailure("Take both earbuds out of your ears before playing the find sound.")
+                    }
+                    _ = try await request(0xf2, [4, 0, 9, 1, side])
+                    earbudActionResult = "Find sound requested. Tap Stop sound when you have found your earbuds."
+                case .stopFinding:
+                    _ = try await request(0xf2, [4, 0, 9, 0, 3])
+                    earbudActionResult = "Stop sound acknowledged."
+                }
+                BudsDiagnostics.record("earbudActionAcknowledged")
+                return
+            }
+            let before = try await queryEarbudSettings()
+            earbudSettings = before
+            if let edit {
+                let change = try before.change(edit)
+                try Task.checkCancellation()
+                _ = try await request(change.opcode, change.payload)
+                let actual = try await queryEarbudSettings()
+                earbudSettings = actual
+                guard actual.confirms(change) else { throw FirmwareFailure("The earbuds did not confirm the setting change. Their current settings are shown.") }
+                BudsDiagnostics.record("earbudSettingVerified", ["config": String(change.id)])
+            }
+        } catch { self.error = error.localizedDescription; throw error }
+    }
+    private func queryEarbudSettings() async throws -> EarbudSettings {
+        var payload: [UInt8] = []
+        for offset in stride(from: 0, to: EarbudSettings.query.count, by: 2) {
+            let query = Array(EarbudSettings.query[offset..<offset + 2])
+            let reply = try await request(0xf3, query)
+            payload += reply.payload
+            BudsDiagnostics.record("earbudConfigRead", ["config": String(query[1]), "bytes": String(reply.payload.count)])
+        }
+        let runInfo = try await request(0x09, EarbudSettings.wearQuery)
+        let result = try EarbudSettings(payload: payload, runInfo: runInfo.payload)
+        BudsDiagnostics.record("earbudSettingsRead", ["gestures": String(EarbudGesture.allCases.filter { result.action($0, side: .left) != nil }.count), "inEarDetection": result.wearDetection.map(String.init) ?? "unavailable"])
+        return result
     }
 
     private func beginFirmwareOperation() async throws {

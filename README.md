@@ -14,7 +14,7 @@ Requires macOS 14 or later. Public releases contain a universal app for Apple si
 
 ## iPhone app
 
-The native [iPhone app](iOS/README.md) uses direct Bluetooth LE for noise modes, ANC strength, transparency presets and battery levels. It includes one cycling Control Center button with a mode-specific icon, optional individual controls and Shortcuts actions. Official Xiaomi firmware discovery, download and installation work without an account; a complete 1.2.3.6 → 1.2.3.7 update was verified on the Chinese model. Requires iOS 26 or later; install from Xcode with your own development signing. The macOS download above does not include the iPhone app.
+The native [iPhone app](iOS/README.md) uses direct Bluetooth LE for noise modes, ANC strength, transparency presets and battery levels. It includes one cycling Control Center button with a mode-specific icon, optional individual controls and Shortcuts actions. Official Xiaomi firmware discovery, download and installation work without an account; a complete 1.2.3.6 → 1.2.3.7 update was verified on the Chinese model. Requires iOS 26 or later. Future releases include a separate unsigned IPA with the controls extension; [sideloading requires your own signing and shared App Group](iOS/SIDELOADING.md). You can also build from Xcode. The Mac DMG is a separate download.
 
 ## Working features
 
@@ -38,6 +38,22 @@ The native [iPhone app](iOS/README.md) uses direct Bluetooth LE for noise modes,
 The earbuds icon appears in the menu bar only while your REDMI Buds 8 Pro are connected. Enable **Always show menu bar icon** in the settings menu to keep it visible when disconnected. The preference is saved across launches and is off by default. Reopen the app from Applications while the icon is hidden to access its controls and settings.
 
 The menu uses SwiftUI's native MenuBarExtra window style, letting macOS draw its outer shape and material. Packaging records the actual build SDK while retaining the macOS 14 deployment target, so current macOS versions use their current appearance. The app runs without a Dock icon. Use the settings menu to enable **Launch at login**, manage automatic updates, or check for a new version.
+
+## Earbud settings
+
+Choose **Settings → Earbud settings…** on Mac or **Earbud settings** on iPhone. Both use the same model-specific settings codec and offer:
+
+- Left/right single, double and triple taps, press-and-hold and swipe assignments, including None.
+- Hold-to-cycle noise modes with at least two modes selected per earbud.
+- In-ear detection, dual connection and automatic call answering.
+- Adaptive ANC, adaptive sound and low latency.
+- Dimensional audio, head tracking, audio preference and scene presets.
+- Default, Bass, Voice, Treble and Custom EQ, with ten frequency bands and the gain limit reported by the buds.
+- An explicit ear tip fit test and find sound. Find refuses to start while either bud reports being worn; Use Stop sound to stop it sooner and keep the app open for the 30-second stop request.
+
+Opening settings only reads. Every persistent change reads fresh state, writes only the selected field, and independently verifies the result. Unsupported settings are omitted. The menu's existing design is unchanged.
+
+Read-only settings were verified on both Mac and iPhone with firmware 1.2.3.7. New setting writes, fit tests and find sounds still require user testing. **Normal tap/hold assignments do not disable the firmware's separate call answer/end/reject behavior.** No configurable hang-up command has been identified for this model. Rename the earbuds in system Bluetooth settings; the generic firmware-name query is unsupported on this pair. These limitations mean this is not a claim of complete Xiaomi-app parity.
 
 ## Earbud firmware
 

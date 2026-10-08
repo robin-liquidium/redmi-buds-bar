@@ -8,6 +8,7 @@ struct BudsView: View {
     @ObservedObject var settings: AppSettings
     @ObservedObject var media: NowPlayingController
     var checkForUpdates: () -> Void
+    var showEarbudSettings: () -> Void
     var showFirmware: () -> Void
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
@@ -60,6 +61,7 @@ struct BudsView: View {
                     }
                     Toggle("Automatic updates", isOn: Binding(get: { settings.automaticUpdates }, set: settings.setAutomaticUpdates))
                     Button("Check for app updates…", action: checkForUpdates).disabled(!settings.canCheckForUpdates || buds.updatingFirmware)
+                    Button("Earbud settings…", action: showEarbudSettings)
                     Button("Earbud firmware…", action: showFirmware)
                     Divider()
                     Text("Redmi Buds Bar \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "dev")")
@@ -121,6 +123,7 @@ final class AppDelegate: NSObject, ObservableObject, NSApplicationDelegate, NSWi
     private var menuVisible = false
     private var visibilityObservation: AnyCancellable?
     private var controlsWindow: NSWindow?
+    private var earbudSettingsWindow: NSWindow?
     private var firmwareWindow: NSWindow?
     var logFile: FileHandle?
 
@@ -152,6 +155,7 @@ final class AppDelegate: NSObject, ObservableObject, NSApplicationDelegate, NSWi
     func controlsView() -> BudsView {
         BudsView(buds: buds, settings: settings, media: media,
                  checkForUpdates: { [weak self] in self?.settings.checkForUpdates() },
+                 showEarbudSettings: { [weak self] in self?.showEarbudSettings() },
                  showFirmware: { [weak self] in self?.showFirmware() })
     }
     func menuDidOpen() {
@@ -186,6 +190,19 @@ final class AppDelegate: NSObject, ObservableObject, NSApplicationDelegate, NSWi
         NSApp.activate(ignoringOtherApps: true)
         settings.refreshLoginStatus()
     }
+    private func showEarbudSettings() {
+        if earbudSettingsWindow == nil {
+            let window = NSWindow(contentViewController: NSHostingController(rootView: EarbudSettingsView(buds: buds)))
+            window.title = "Earbud settings"
+            window.styleMask = [.titled, .closable]
+            window.isReleasedWhenClosed = false
+            window.delegate = self
+            window.center()
+            earbudSettingsWindow = window
+        }
+        earbudSettingsWindow?.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+    }
     private func showFirmware() {
         if firmwareWindow == nil {
             let window = NSWindow(contentViewController: NSHostingController(rootView: FirmwareView(buds: buds, updater: firmwareUpdater)))
@@ -201,6 +218,7 @@ final class AppDelegate: NSObject, ObservableObject, NSApplicationDelegate, NSWi
     }
     func windowWillClose(_ notification: Notification) {
         if notification.object as? NSWindow === firmwareWindow { firmwareWindow = nil }
+        else if notification.object as? NSWindow === earbudSettingsWindow { earbudSettingsWindow = nil }
         else { controlsWindow = nil }
         if !menuVisible && controlsWindow?.isVisible != true { media.stop() }
     }

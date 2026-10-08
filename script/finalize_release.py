@@ -3,6 +3,7 @@
 import argparse, base64, hashlib, json, os, re, shutil, subprocess, tempfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
+from verify_ios_package import verify as verify_ios
 
 ROOT = Path(__file__).resolve().parent.parent
 REPO = 'robin-liquidium/redmi-buds-bar'
@@ -40,6 +41,10 @@ def finalize(tag):
         for name, checksum in sums.items():
             if Path(name).name != name or sha(stage / name) != checksum:
                 raise RuntimeError(f'Checksum mismatch: {name}')
+        ipa_name = f"RedmiBuds-{metadata['version']}-unsigned.ipa"
+        if ipa_name not in sums or 'iOS-Sideloading.md' not in sums:
+            raise RuntimeError('Missing checksummed iOS package or sideload instructions')
+        verify_ios(stage / ipa_name, metadata['version'], metadata['build'])
         feed = stage / 'appcast.xml'
         run('swift', 'package', 'resolve')
         verifier = ROOT / '.build/artifacts/sparkle/Sparkle/bin/sign_update'

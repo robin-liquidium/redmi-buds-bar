@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03E6D9E4EB7A45AFDFB92548 /* EarbudSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0BDC8EA38488E08E565C4EC /* EarbudSettings.swift */; };
+		06DD8D79B7B388A6AE1EAC88 /* EarbudSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3C4AFE5E8B13026AFEE3C9 /* EarbudSettingsView.swift */; };
+		1615D36A8AE1C4DED4C3AEF4 /* BudsAppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765A051FB97E05C6EFC889A8 /* BudsAppGroup.swift */; };
 		2E205E6E25E7920EDD2EB1BB /* BLEBuds.swift in Sources */ = {isa = PBXBuildFile; fileRef = D754CF544F601E7113C67A89 /* BLEBuds.swift */; };
 		48D98E8A06F4A5537E28ABFB /* BudsControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B5391F307736A526499FF /* BudsControls.swift */; };
 		50093BD2636E3F85413CE221 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 12A45700E765E8B54BFC49F1 /* Assets.xcassets */; };
@@ -27,8 +30,10 @@
 		C8A6D2A2C2378399BD77E79F /* NoiseIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64DF4E37563BAC780C12BB86 /* NoiseIntents.swift */; };
 		D7797F694A83FF2B7579DA15 /* Firmware.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D5153265C0383ACC2E1E599 /* Firmware.swift */; };
 		E26CA9082DE02C8851E7E455 /* NoiseControlState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91FF1392A2D9C9730DA91314 /* NoiseControlState.swift */; };
+		E564BC4B7B83C0E2C569AF25 /* BudsAppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765A051FB97E05C6EFC889A8 /* BudsAppGroup.swift */; };
 		E94883E733D7CD385C6A7E16 /* NoiseControlState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91FF1392A2D9C9730DA91314 /* NoiseControlState.swift */; };
 		EDBC4CFFCABD4C9D89E87453 /* FirmwareUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A40224E0B111AD549413E9 /* FirmwareUpdate.swift */; };
+		FA6C0AE410CA40CF222B644A /* EarbudSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0BDC8EA38488E08E565C4EC /* EarbudSettings.swift */; };
 		FE6B7BB914F7A9E8914D1332 /* BLEBuds.swift in Sources */ = {isa = PBXBuildFile; fileRef = D754CF544F601E7113C67A89 /* BLEBuds.swift */; };
 /* End PBXBuildFile section */
 
@@ -65,11 +70,14 @@
 		69A9FD90529CF4F580776926 /* FirmwareService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirmwareService.swift; sourceTree = "<group>"; };
 		6DB0DF6D2A73B889B1131D87 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		724D62B18614166FDFF4E169 /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
+		765A051FB97E05C6EFC889A8 /* BudsAppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudsAppGroup.swift; sourceTree = "<group>"; };
+		7B3C4AFE5E8B13026AFEE3C9 /* EarbudSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarbudSettingsView.swift; sourceTree = "<group>"; };
 		81A40224E0B111AD549413E9 /* FirmwareUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirmwareUpdate.swift; sourceTree = "<group>"; };
 		91FF1392A2D9C9730DA91314 /* NoiseControlState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoiseControlState.swift; sourceTree = "<group>"; };
 		98B1F977496AA97A501F2E90 /* RedmiBuds.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RedmiBuds.entitlements; sourceTree = "<group>"; };
 		9D5153265C0383ACC2E1E599 /* Firmware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Firmware.swift; sourceTree = "<group>"; };
 		AFB455D48C0B1BFE63646D12 /* MMAAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MMAAuthentication.swift; sourceTree = "<group>"; };
+		B0BDC8EA38488E08E565C4EC /* EarbudSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarbudSettings.swift; sourceTree = "<group>"; };
 		B2A5A9AA5B0134802CF6442C /* RedmiBuds.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = RedmiBuds.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9A17F10214D91BC50C03DD3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CE1B5391F307736A526499FF /* BudsControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudsControls.swift; sourceTree = "<group>"; };
@@ -79,12 +87,22 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		1132C7738CF1D73E712B03B1 /* RedmiBudsBar */ = {
+			isa = PBXGroup;
+			children = (
+				7B3C4AFE5E8B13026AFEE3C9 /* EarbudSettingsView.swift */,
+			);
+			name = RedmiBudsBar;
+			path = ../Sources/RedmiBudsBar;
+			sourceTree = "<group>";
+		};
 		1C4A7148E0C0AFDA5B7D9C82 = {
 			isa = PBXGroup;
 			children = (
 				62BF92A6DC4C6B12E0F33188 /* App */,
 				D1973E904E553EC9F4159ED8 /* BudsCore */,
 				FEAA0288065EEE95F7B33447 /* Controls */,
+				1132C7738CF1D73E712B03B1 /* RedmiBudsBar */,
 				227A18D48F5E7D1AAF5EAF67 /* Shared */,
 				6D318850F7298DF7C9BA3622 /* Products */,
 			);
@@ -94,6 +112,7 @@
 			isa = PBXGroup;
 			children = (
 				D754CF544F601E7113C67A89 /* BLEBuds.swift */,
+				765A051FB97E05C6EFC889A8 /* BudsAppGroup.swift */,
 				E871F14016EDB6D3963CDDDF /* BudsDiagnostics.swift */,
 				AFB455D48C0B1BFE63646D12 /* MMAAuthentication.swift */,
 				91FF1392A2D9C9730DA91314 /* NoiseControlState.swift */,
@@ -128,6 +147,7 @@
 		D1973E904E553EC9F4159ED8 /* BudsCore */ = {
 			isa = PBXGroup;
 			children = (
+				B0BDC8EA38488E08E565C4EC /* EarbudSettings.swift */,
 				9D5153265C0383ACC2E1E599 /* Firmware.swift */,
 				69A9FD90529CF4F580776926 /* FirmwareService.swift */,
 				724D62B18614166FDFF4E169 /* Protocol.swift */,
@@ -251,8 +271,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E205E6E25E7920EDD2EB1BB /* BLEBuds.swift in Sources */,
+				E564BC4B7B83C0E2C569AF25 /* BudsAppGroup.swift in Sources */,
 				A7A18585AFBECF0ECC2DF962 /* BudsDiagnostics.swift in Sources */,
 				76515639654446E27EB24407 /* DeviceVerification.swift in Sources */,
+				03E6D9E4EB7A45AFDFB92548 /* EarbudSettings.swift in Sources */,
+				06DD8D79B7B388A6AE1EAC88 /* EarbudSettingsView.swift in Sources */,
 				9B769F50B9C74FDFF2A6F49D /* Firmware.swift in Sources */,
 				8E64B126F5C07C9C429BCBD2 /* FirmwareService.swift in Sources */,
 				EDBC4CFFCABD4C9D89E87453 /* FirmwareUpdate.swift in Sources */,
@@ -269,8 +292,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				FE6B7BB914F7A9E8914D1332 /* BLEBuds.swift in Sources */,
+				1615D36A8AE1C4DED4C3AEF4 /* BudsAppGroup.swift in Sources */,
 				48D98E8A06F4A5537E28ABFB /* BudsControls.swift in Sources */,
 				A975242DBA06C81044D8DF3E /* BudsDiagnostics.swift in Sources */,
+				FA6C0AE410CA40CF222B644A /* EarbudSettings.swift in Sources */,
 				D7797F694A83FF2B7579DA15 /* Firmware.swift in Sources */,
 				9E63B263253218A9BCF23A3B /* MMAAuthentication.swift in Sources */,
 				E26CA9082DE02C8851E7E455 /* NoiseControlState.swift in Sources */,
@@ -311,6 +336,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUDS_APP_GROUP = group.build.robin.RedmiBuds;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -342,7 +368,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 5S5288W3R7;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -397,6 +423,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUDS_APP_GROUP = group.build.robin.RedmiBuds;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -428,7 +455,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 5S5288W3R7;
 				ENABLE_NS_ASSERTIONS = NO;

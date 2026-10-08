@@ -6,6 +6,7 @@ controller.log = { print($0) }
 var didSet = false
 let argument = CommandLine.arguments.dropFirst().first ?? "status"
 let checkingFirmware = argument == "firmware-check"
+let checkingGestures = argument == "gestures"
 let desired: NoiseMode? = ["anc": .anc, "off": .off, "transparency": .transparency][argument]
 let strengthArgument = CommandLine.arguments.dropFirst(2).first
 let strength = strengthArgument.flatMap(UInt8.init)
@@ -17,7 +18,29 @@ if let strengthArgument {
 }
 controller.onNoise = { setting in
     print("STATE mode=\(setting.mode.title) strength=\(setting.strength) firmware=\(controller.firmware) L=\(controller.left?.percent ?? -1) R=\(controller.right?.percent ?? -1)")
-    if checkingFirmware {
+    if checkingGestures {
+        guard !didSet else { return }
+        didSet = true
+        Task { @MainActor in
+            do {
+                try await controller.readEarbudSettings()
+                if let settings = controller.earbudSettings {
+                    for side in EarbudSide.allCases {
+                        for kind in EarbudGesture.allCases {
+                            if let value = settings.action(kind, side: side) { print("GESTURE \(side.title) \(kind.title)=\(value)") }
+                        }
+                        print("NOISE CYCLE \(side.title)=\(settings.noiseMask(side).map(String.init) ?? "unsupported")")
+                    }
+                    for id: UInt16 in [3, 4, 7, 0x1d, 0x25, 0x29, 0x2f, 0x36, 0x37, 0x68, 6] {
+                        print("CONFIG \(String(format: "%04X", id))=\(settings.value(id)?.map { String(format: "%02X", $0) }.joined(separator: " ") ?? "unavailable")")
+                    }
+                    print("IN-EAR DETECTION=\(settings.wearDetection.map(String.init) ?? "unsupported")")
+                    print("AUTO ANSWER=\(settings.autoAnswer.map(String.init) ?? "unsupported") MULTIPOINT=\(settings.multipoint.map(String.init) ?? "unsupported")")
+                }
+                controller.stop(); exit(0)
+            } catch { print("FAIL: \(error.localizedDescription)"); controller.stop(); exit(1) }
+        }
+    } else if checkingFirmware {
         guard !didSet else { return }
         didSet = true
         Task { @MainActor in

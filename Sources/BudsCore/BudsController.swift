@@ -16,6 +16,7 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
     @Published public private(set) var productID: UInt16?
     @Published public private(set) var changing = false
     @Published public private(set) var updatingFirmware = false
+    @Published public private(set) var earbudSettings: EarbudSettings?
     @Published public private(set) var lastError: String?
     public var log: ((String) -> Void)?
     public var onNoise: ((NoiseSetting) -> Void)?
@@ -79,10 +80,15 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
         stopped = false
         connect()
     }
+    private func matchesBuds(_ device: IOBluetoothDevice) -> Bool {
+        if (device.name ?? "").localizedCaseInsensitiveContains("REDMI Buds 8 Pro") { return true }
+        guard let verified = UserDefaults.standard.string(forKey: "verifiedBudsAddress"), let address = device.addressString else { return false }
+        return address == verified
+    }
     @discardableResult
     private func updateBluetoothConnection() -> IOBluetoothDevice? {
         let buds = (IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice])?.first(where: {
-            ($0.name ?? "").localizedCaseInsensitiveContains("REDMI Buds 8 Pro") && $0.isConnected()
+            matchesBuds($0) && $0.isConnected()
         })
         if bluetoothConnected != (buds != nil) { bluetoothConnected = buds != nil }
         return buds
@@ -257,6 +263,9 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
                     self.peerFirmware = item.value.count >= 4 ? MMAFirmwareImage.versionName(UInt16(item.value[2]) << 8 | UInt16(item.value[3])) : nil
                 } else if item.id == 3, item.value.count == 4 {
                     self.productID = UInt16(item.value[2]) << 8 | UInt16(item.value[3])
+                    if item.value == [0x27, 0x17, 0x50, 0xe3], let address = self.device?.addressString {
+                        UserDefaults.standard.set(address, forKey: "verifiedBudsAddress")
+                    }
                 }
             }
         }
@@ -281,12 +290,12 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
         }
     }
 
-    @MainActor private func ensureFirmwareConnection() async throws {
+    @MainActor private func ensureControlConnection() async throws {
         if connected, channel?.isOpen() == true { return }
-        guard !stopped else { throw FirmwareFailure("Open the earbuds controls before checking firmware.") }
+        guard !stopped else { throw FirmwareFailure("Open the earbuds controls before changing settings.") }
         if updateBluetoothConnection() == nil {
             guard let paired = (IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice])?.first(where: {
-                ($0.name ?? "").localizedCaseInsensitiveContains("REDMI Buds 8 Pro")
+                matchesBuds($0)
             }), paired.openConnection() == kIOReturnSuccess else {
                 throw FirmwareFailure("Connect REDMI Buds 8 Pro to this Mac in Bluetooth settings.")
             }
@@ -300,16 +309,86 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
         }
     }
 
-    @MainActor private func firmwareRequest(_ opcode: UInt8, _ payload: [UInt8], timeout: TimeInterval = 4) async throws -> Packet {
+    @MainActor private func controlRequest(_ opcode: UInt8, _ payload: [UInt8], timeout: TimeInterval = 4) async throws -> Packet {
         guard connected, channel?.isOpen() == true else { throw FirmwareFailure("The earbuds' control connection is unavailable.") }
         return try await withCheckedThrowingContinuation { continuation in
             request(opcode, payload, timeout: timeout) { packet in
                 if let packet { continuation.resume(returning: packet) }
-                else { continuation.resume(throwing: FirmwareFailure("The earbuds did not complete firmware command \(String(format: "%02X", opcode)).")) }
+                else { continuation.resume(throwing: FirmwareFailure("The earbuds did not complete control command \(String(format: "%02X", opcode)).")) }
             }
         }
     }
 
+    @MainActor public func readEarbudSettings() async throws {
+        try await settingsOperation(nil, action: nil)
+    }
+    @MainActor public func editEarbudSetting(_ edit: EarbudEdit) async throws {
+        try await settingsOperation(edit, action: nil)
+    }
+    @MainActor public func performEarbudAction(_ action: EarbudAction) async throws -> String {
+        try await settingsOperation(nil, action: action)
+        return earbudActionResult ?? "Done"
+    }
+    @Published public private(set) var earbudActionResult: String?
+    @MainActor private func settingsOperation(_ edit: EarbudEdit?, action: EarbudAction?) async throws {
+        guard !changing, !updatingFirmware else { throw FirmwareFailure("Wait for the current earbud operation to finish.") }
+        changing = true; lastError = nil
+        idleTimeout?.invalidate(); idleTimeout = nil
+        defer { changing = false; processQueue() }
+        do {
+            let deadline = ContinuousClock.now.advanced(by: .seconds(5))
+            while pending != nil || !queue.isEmpty {
+                guard ContinuousClock.now < deadline else { throw FirmwareFailure("The earbuds' controls are busy. Try again.") }
+                try await Task.sleep(for: .milliseconds(100))
+            }
+            try await ensureControlConnection()
+            try await readFirmwareVersions() // Confirm this model before offering its gesture actions.
+            if let action {
+                earbudActionResult = nil
+                switch action {
+                case .fitTest:
+                    _ = try await controlRequest(0xf2, [3, 0, 5, 1])
+                    try await Task.sleep(for: .seconds(5))
+                    for _ in 0..<10 {
+                        if let result = EarTipFit.results(try await controlRequest(0xf3, [0, 6]).payload) { earbudActionResult = result; return }
+                        try await Task.sleep(for: .seconds(1))
+                    }
+                    throw FirmwareFailure("The fit test did not return a result. Wear both earbuds and try again.")
+                case let .find(side):
+                    guard [UInt8(1), 2, 3].contains(side), EarTipFit.mayFind(try await controlRequest(0xf3, [0, 12]).payload) else {
+                        throw FirmwareFailure("Take both earbuds out of your ears before playing the find sound.")
+                    }
+                    _ = try await controlRequest(0xf2, [4, 0, 9, 1, side])
+                    earbudActionResult = "Find sound requested. Tap Stop sound when you have found your earbuds."
+                case .stopFinding:
+                    _ = try await controlRequest(0xf2, [4, 0, 9, 0, 3])
+                    earbudActionResult = "Stop sound acknowledged."
+                }
+                return
+            }
+            let before = try await queryEarbudSettings()
+            earbudSettings = before
+            if let edit {
+                let change = try before.change(edit)
+                try Task.checkCancellation()
+                _ = try await controlRequest(change.opcode, change.payload)
+                let actual = try await queryEarbudSettings()
+                earbudSettings = actual
+                guard actual.confirms(change) else { throw FirmwareFailure("The earbuds did not confirm the setting change. Their current settings are shown.") }
+                log?("Earbud setting verified: config=\(change.id)")
+            }
+        } catch { lastError = error.localizedDescription; throw error }
+    }
+
+    @MainActor private func queryEarbudSettings() async throws -> EarbudSettings {
+        var payload: [UInt8] = []
+        for offset in stride(from: 0, to: EarbudSettings.query.count, by: 2) {
+            let query = Array(EarbudSettings.query[offset..<offset + 2])
+            payload += try await controlRequest(0xf3, query).payload
+            log?("Read earbud config \(query[1])")
+        }
+        return try EarbudSettings(payload: payload, runInfo: try await controlRequest(0x09, EarbudSettings.wearQuery).payload)
+    }
     @MainActor private func beginFirmwareOperation() async throws {
         guard !updatingFirmware, !changing else { throw FirmwareFailure("Wait for the current earbud operation to finish.") }
         updatingFirmware = true
@@ -320,7 +399,7 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
                 guard ContinuousClock.now < deadline else { throw FirmwareFailure("The earbuds' controls are busy. Try again.") }
                 try await Task.sleep(for: .milliseconds(100))
             }
-            try await ensureFirmwareConnection()
+            try await ensureControlConnection()
         } catch { endFirmwareOperation(); throw error }
     }
     private func endFirmwareOperation() {
@@ -330,12 +409,13 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
     }
 
     @MainActor private func readFirmwareVersions() async throws {
-        let fields = parseTLVs(try await firmwareRequest(0x02, [0xff, 0xff, 0xff, 0xff]).payload, idWidth: 1)
+        let fields = parseTLVs(try await controlRequest(0x02, [0xff, 0xff, 0xff, 0xff]).payload, idWidth: 1)
         guard fields.first(where: { $0.id == 3 })?.value == [0x27, 0x17, 0x50, 0xe3],
               let versions = fields.first(where: { $0.id == 1 })?.value, versions.count == 4 else {
-            throw FirmwareFailure("Firmware updates are only supported for this Chinese REDMI Buds 8 Pro model (2717/50E3), with both earbuds connected.")
+            throw FirmwareFailure("These settings require the Chinese REDMI Buds 8 Pro model (2717/50E3), with both earbuds connected.")
         }
         productID = 0x50e3
+        if let address = device?.addressString { UserDefaults.standard.set(address, forKey: "verifiedBudsAddress") }
         firmware = MMAFirmwareImage.versionName(UInt16(versions[0]) << 8 | UInt16(versions[1]))
         peerFirmware = MMAFirmwareImage.versionName(UInt16(versions[2]) << 8 | UInt16(versions[3]))
         if let batteries = fields.first(where: { $0.id == 7 })?.value, batteries.count == 3 {
@@ -355,9 +435,9 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
               let peer = peerFirmware.flatMap(MMAFirmwareImage.versionCode), peer >> 12 == image.version >> 12, peer <= image.version else {
             throw FirmwareFailure("The firmware does not match both earbuds' hardware and software versions.")
         }
-        let identifier = try await firmwareRequest(0xe1, []).payload
+        let identifier = try await controlRequest(0xe1, []).payload
         guard identifier == [0, 0, 0, 0, 0, 14] else { throw FirmwareFailure("This model's firmware identification layout is not supported.") }
-        let reply = try await firmwareRequest(0xe2, image.identification).payload
+        let reply = try await controlRequest(0xe2, image.identification).payload
         guard reply.count == 1 else { throw FirmwareFailure("The earbuds returned an invalid update-readiness response.") }
         log?("Firmware eligibility: result=\(reply[0]) target=\(image.versionName)")
         if let problem = FirmwareFailure.eligibility(reply[0]) { throw FirmwareFailure(problem) }
@@ -378,7 +458,7 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
             try Task.checkCancellation()
             progress(0, "Preparing the earbuds…")
             entered = true
-            var block = try MMAUpdateBlock(response: try await firmwareRequest(0xe3, [], timeout: 30).payload, entering: true)
+            var block = try MMAUpdateBlock(response: try await controlRequest(0xe3, [], timeout: 30).payload, entering: true)
             let withCRC = block.requiresCRC
             var previousOffset = -1
             while !block.finished {
@@ -389,24 +469,24 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
                 progress(Double(block.offset) / Double(image.bytes.count), "Updating. Keep both earbuds in the open case.")
                 log?("Firmware block: offset=\(block.offset) length=\(block.length)")
                 previousOffset = block.offset
-                block = try MMAUpdateBlock(response: try await firmwareRequest(0xe5, payload, timeout: 12).payload, entering: false)
+                block = try MMAUpdateBlock(response: try await controlRequest(0xe5, payload, timeout: 12).payload, entering: false)
             }
             try Task.checkCancellation()
             if block.delayMilliseconds > 0 { try await Task.sleep(for: .milliseconds(block.delayMilliseconds)) }
             progress(1, "Verifying the firmware…")
-            guard try await firmwareRequest(0xe6, [], timeout: 30).payload == [0] else {
+            guard try await controlRequest(0xe6, [], timeout: 30).payload == [0] else {
                 throw FirmwareFailure("The earbuds did not verify the firmware.")
             }
             entered = false
             log?("Firmware transfer verified: \(image.versionName)")
             progress(1, "Restarting and checking both earbuds…")
-            do { _ = try await firmwareRequest(0x03, [0], timeout: 5) }
+            do { _ = try await controlRequest(0x03, [0], timeout: 5) }
             catch { log?("Firmware reboot acknowledgment: \(error.localizedDescription)") }
             let deadline = ContinuousClock.now.advanced(by: .seconds(120))
             while ContinuousClock.now < deadline {
                 try await Task.sleep(for: .seconds(5))
                 do {
-                    try await ensureFirmwareConnection()
+                    try await ensureControlConnection()
                     try await readFirmwareVersions()
                     if firmware == image.versionName, peerFirmware == image.versionName {
                         log?("Firmware update complete: both earbuds \(image.versionName)")
@@ -418,7 +498,7 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
             throw FirmwareFailure("Firmware transfer was verified, but both new versions could not be confirmed yet. Reconnect and check the versions before trying another update.")
         } catch {
             if entered, connected, channel?.isOpen() == true {
-                do { log?("Firmware exit confirmed: \(try await firmwareRequest(0xe4, [], timeout: 8).payload == [0])") }
+                do { log?("Firmware exit confirmed: \(try await controlRequest(0xe4, [], timeout: 8).payload == [0])") }
                 catch { log?("Could not confirm firmware exit: \(error.localizedDescription)") }
             }
             lastError = error.localizedDescription

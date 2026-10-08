@@ -15,6 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: xcodebuild -project iOS/RedmiBuds.xcodeproj -scheme RedmiBuds -configuration Release -destination 'generic/platform=iOS Simulator' -derivedDataPath work/ios-ci CODE_SIGNING_ALLOWED=NO build
+      - run: python3 script/package_ios.py
   website:
     runs-on: ubuntu-latest
     steps:

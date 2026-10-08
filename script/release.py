@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Advance one durable GitHub draft release through Apple notarization."""
 import argparse, hashlib, html, json, os, re, shutil, subprocess, sys, time
+from verify_ios_package import verify as verify_ios
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -87,7 +88,7 @@ def advance(tag):
         current = release(tag)
     except LookupError:
         body = OUT / 'release-notes.md'
-        body.write_text('\n'.join('- ' + c for c in metadata['changes']) + '\n\nRequires macOS 14 or later. Universal Apple silicon and Intel app.\n')
+        body.write_text('\n'.join('- ' + c for c in metadata['changes']) + '\n\nRequires macOS 14 or later. Universal Apple silicon and Intel app.\n\niPhone: iOS 26 or later. The unsigned IPA includes Control Center controls and requires your own compatible signing before installation; see iOS-Sideloading.md and SHA256SUMS.\n')
         gh('release', 'create', tag, '--verify-tag', '--draft', '--title', f"Redmi Buds Bar {metadata['version']}", '--notes-file', body, '-R', REPO)
         # GitHub may return a temporary untagged draft immediately after creation.
         for _ in range(6):
@@ -114,6 +115,14 @@ def advance(tag):
     if phase.endswith(('_submitting', '_rejected')):
         raise RuntimeError(f'{phase}: inspect Apple submission history; do not resubmit. See RELEASING.md.')
     if phase == 'building':
+        run('python3', 'script/package_ios.py')
+        ipa = OUT / f"RedmiBuds-{metadata['version']}-unsigned.ipa"
+        instructions = OUT / 'iOS-Sideloading.md'
+        upload(tag, ipa)
+        upload(tag, instructions)
+        state['ipa_filename'] = ipa.name
+        state['ipa_sha256'] = digest(ipa)
+        state['sideloading_sha256'] = digest(instructions)
         run('./script/package_app.sh', '--universal')
         path = OUT / 'notary-app.zip'
         path.unlink(missing_ok=True)
@@ -153,6 +162,9 @@ def advance(tag):
         stable = OUT / 'RedmiBudsBar.dmg'
         shutil.copy2(dmg, stable)
         appzip = download(tag, state['zip_filename'], state['zip_sha256'])
+        ipa = download(tag, state['ipa_filename'], state['ipa_sha256'])
+        verify_ios(ipa, metadata['version'], metadata['build'])
+        instructions = download(tag, 'iOS-Sideloading.md', state['sideloading_sha256'])
         archive = OUT / 'feed'
         shutil.rmtree(archive, ignore_errors=True)
         archive.mkdir()
@@ -167,7 +179,7 @@ def advance(tag):
         evidence = OUT / 'notarization.json'
         evidence.write_text(json.dumps({k: v for k, v in state.items() if k != 'phase'} | {'status': 'Accepted'}, indent=2) + '\n')
         sums = OUT / 'SHA256SUMS'
-        sums.write_text(''.join(f'{digest(p)}  {p.name}\n' for p in [final, stable, appzip]))
+        sums.write_text(''.join(f'{digest(p)}  {p.name}\n' for p in [final, stable, appzip, ipa, instructions]))
         for path in [final, stable, archive / 'appcast.xml', archive / appzip.with_suffix('.html').name, evidence, sums, ROOT / 'release.json']:
             upload(tag, path)
         # Upload completion marker before removing private draft staging assets.
@@ -175,7 +187,7 @@ def advance(tag):
         save(tag, state)
     if state['phase'] == 'ready':
         current = release(tag)
-        required = {f"RedmiBudsBar-{metadata['version']}.dmg", state['zip_filename'], 'RedmiBudsBar.dmg', 'appcast.xml', 'SHA256SUMS', 'release.json', 'notarization.json'}
+        required = {f"RedmiBudsBar-{metadata['version']}.dmg", state['zip_filename'], state['ipa_filename'], 'iOS-Sideloading.md', 'RedmiBudsBar.dmg', 'appcast.xml', 'SHA256SUMS', 'release.json', 'notarization.json'}
         if not required.issubset({a['name'] for a in current['assets']}):
             raise RuntimeError('Missing final release assets')
         # Retain state for audit/resume; it contains identifiers and hashes, no credentials.
