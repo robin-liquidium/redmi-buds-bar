@@ -4,20 +4,22 @@ cd "$(dirname "$0")/.."
 IDENTITY="${SIGNING_IDENTITY:--}"
 APP="$PWD/outputs/RedmiBudsBar.app"
 SDK_VERSION="$(xcrun --sdk macosx --show-sdk-version)"
-# SwiftPM's Xcode build driver otherwise records the deployment target as the SDK,
-# which opts the executable into macOS's legacy appearance despite using a new SDK.
-LINKER_FLAGS=(-Xlinker -platform_version -Xlinker macos -Xlinker 14.0 -Xlinker "$SDK_VERSION")
 mkdir -p outputs
 if [[ "${1:-}" == --universal ]]; then
-  swift build -c release --arch arm64 --arch x86_64 "${LINKER_FLAGS[@]}"
+  swift build -c release --arch arm64 --arch x86_64
   BUILD_DIR="$(swift build -c release --arch arm64 --arch x86_64 --show-bin-path)"
 else
-  swift build -c release "${LINKER_FLAGS[@]}"
+  swift build -c release
   BUILD_DIR="$(swift build -c release --show-bin-path)"
 fi
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
 cp "$BUILD_DIR/RedmiBudsBar" "$APP/Contents/MacOS/"
+# SwiftPM's Xcode build driver can record the deployment target as the SDK.
+# Normalize the copied executable before signing, without driver-specific linker flags.
+xcrun vtool -set-build-version macos 14.0 "$SDK_VERSION" -replace \
+  -output "$APP/Contents/MacOS/RedmiBudsBar.sdk" "$APP/Contents/MacOS/RedmiBudsBar"
+mv "$APP/Contents/MacOS/RedmiBudsBar.sdk" "$APP/Contents/MacOS/RedmiBudsBar"
 SDK_METADATA="$(xcrun vtool -show-build "$APP/Contents/MacOS/RedmiBudsBar")"
 RECORDED_SDKS="$(awk '$1 == "sdk" { print $2 }' <<< "$SDK_METADATA")"
 [[ -n "$RECORDED_SDKS" ]] || { echo "Missing executable SDK metadata" >&2; exit 2; }
