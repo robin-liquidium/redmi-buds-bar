@@ -51,7 +51,7 @@ struct BudsView: View {
             HStack {
                 Button(buds.connected ? "Refresh" : "Reconnect") {
                     if buds.connected { buds.refresh() } else { buds.reconnect() }
-                }.disabled(buds.changing || buds.updatingFirmware)
+                }.disabled(buds.changing || buds.updatingFirmware || buds.controlConnectionTimedOut)
                 Spacer()
                 Menu {
                     Toggle("Always show menu bar icon", isOn: $settings.alwaysShowMenuBarIcon)

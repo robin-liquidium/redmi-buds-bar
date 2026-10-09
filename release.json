@@ -1,11 +1,11 @@
 {
-  "version": "0.4.0",
-  "build": 7,
-  "date": "2026-10-08",
+  "version": "0.5.0",
+  "build": 8,
+  "date": "2026-10-09",
   "changes": [
-    "Check, download and install official REDMI Buds 8 Pro firmware from the Mac without a Xiaomi account.",
-    "Use the native macOS menu window and background while keeping the familiar battery, noise and playback controls.",
-    "Release idle control connections so Mac and iPhone controls can take turns without disconnecting audio.",
-    "Add the iPhone app source with direct noise controls, Control Center cycling, diagnostics and firmware updates."
+    "Keep pending Mac control connections after a timeout to prevent duplicate attempts, with clear recovery instructions.",
+    "Configure earbud gestures, noise-mode cycling, EQ and supported feature settings on Mac and iPhone, with independent readback after changes.",
+    "Add ear tip fit testing and find-earbud sound controls.",
+    "Provide an unsigned iPhone IPA with Control Center controls and instructions for signing it yourself."
   ]
 }

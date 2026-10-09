@@ -7,6 +7,7 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
     @Published public private(set) var status = "Looking for your buds…"
     @Published public private(set) var connected = false
     @Published public private(set) var bluetoothConnected = false
+    @Published public private(set) var controlConnectionTimedOut = false
     @Published public private(set) var noise: NoiseSetting?
     @Published public private(set) var left: Battery?
     @Published public private(set) var right: Battery?
@@ -41,8 +42,15 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
     private var connectionWaiters: [CheckedContinuation<Void, Error>] = []
     private var frames = MMAFrameQueue()
     private var writingChunk: NSMutableData?
+    private let pairedDevices: () -> [IOBluetoothDevice]
 
-    public override init() { super.init() }
+    public override convenience init() {
+        self.init(pairedDevices: { IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice] ?? [] })
+    }
+    init(pairedDevices: @escaping () -> [IOBluetoothDevice]) {
+        self.pairedDevices = pairedDevices
+        super.init()
+    }
     public func start() {
         stopped = false
         timer?.invalidate()
@@ -51,8 +59,11 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
             let wasBluetoothConnected = self.bluetoothConnected
             self.updateBluetoothConnection()
             guard !self.updatingFirmware else { return }
+            if (self.connected || self.connecting), self.device?.isConnected() != true {
+                self.disconnect("Buds disconnected"); return
+            }
+            guard !self.connecting else { return }
             if self.connected {
-                if self.device?.isConnected() != true { self.disconnect("Buds disconnected"); return }
                 self.refreshTicks += 1
                 if self.refreshTicks >= 15 { self.refreshTicks = 0; self.refresh() }
             } else if !self.connecting {
@@ -76,6 +87,9 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
     }
     public func reconnect() {
         guard !updatingFirmware else { return }
+        // Closing an opening channel does not reliably cancel it in bluetoothd.
+        // Keep its delegate so a late success can finish the original attempt.
+        if connecting, channel != nil, device?.isConnected() == true { return }
         disconnect("Reconnecting…")
         stopped = false
         connect()
@@ -87,7 +101,7 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
     }
     @discardableResult
     private func updateBluetoothConnection() -> IOBluetoothDevice? {
-        let buds = (IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice])?.first(where: {
+        let buds = pairedDevices().first(where: {
             matchesBuds($0) && $0.isConnected()
         })
         if bluetoothConnected != (buds != nil) { bluetoothConnected = buds != nil }
@@ -103,11 +117,23 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
         let result = buds.performSDPQuery(self)
         if result != kIOReturnSuccess { disconnect("Service discovery failed (\(result))"); return }
         queryTimeout = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { [weak self] _ in
-            self?.disconnect("Bluetooth connection timed out")
+            guard let self else { return }
+            if self.channel == nil { self.disconnect("Bluetooth service discovery timed out"); return }
+            // A timeout is not an RFCOMM open-completion event. Discarding the
+            // channel here can leave an orphaned DLCI and make every retry fail.
+            // Keep it until a callback or physical disconnect; a force-close
+            // after another grace period cannot safely clear that daemon state.
+            self.queryTimeout = nil
+            self.controlConnectionTimedOut = true
+            self.connected = false
+            self.status = "Waiting for earbud controls"
+            self.lastError = "If controls stay unavailable, restart your earbuds using their charging case, then reconnect them to this Mac."
+            self.log?("Control channel opening timed out; retaining pending channel until completion or Bluetooth disconnect")
+            self.failRequests("The earbuds' control connection timed out. Restart the earbuds and reconnect.")
         }
     }
     @objc public func sdpQueryComplete(_ queriedDevice: IOBluetoothDevice!, status result: IOReturn) {
-        guard connecting, !stopped, queriedDevice == device else { return }
+        guard connecting, !stopped, queriedDevice == device, channel == nil else { return }
         guard result == kIOReturnSuccess else { disconnect("Service discovery failed (\(result))"); return }
         // Resolve Xiaomi's actual advertised channel. Never assume another model's channel number.
         let uuidBytes: [UInt8] = [0x00,0x00,0xfd,0x2d,0x00,0x00,0x10,0x00,0x80,0x00,0x00,0x80,0x5f,0x9b,0x34,0xfb]
@@ -120,10 +146,15 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
         if result != kIOReturnSuccess { disconnect("Could not open control channel (\(result))") }
     }
     public func rfcommChannelOpenComplete(_ openedChannel: IOBluetoothRFCOMMChannel!, status result: IOReturn) {
-        guard !stopped, connecting, openedChannel == channel else { openedChannel?.close(); return }
+        guard let openedChannel else { return }
+        guard openedChannel == channel else { openedChannel.close(); return }
+        // An extra completion for the current, already-open channel must not close it.
+        guard !stopped, connecting else { return }
         queryTimeout?.invalidate(); queryTimeout = nil
         guard result == kIOReturnSuccess else { disconnect("Control connection failed (\(result))"); return }
         connecting = false
+        controlConnectionTimedOut = false
+        lastError = nil
         connected = true
         status = "Reading your buds…"
         let waiters = connectionWaiters; connectionWaiters.removeAll()
@@ -137,12 +168,10 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
     }
     private func disconnect(_ message: String) {
         connecting = false; connected = false
+        controlConnectionTimedOut = false
         queryTimeout?.invalidate(); queryTimeout = nil
         idleTimeout?.invalidate(); idleTimeout = nil
         timeout?.invalidate(); timeout = nil
-        let failedPending = pending; pending = nil
-        let failedQueue = queue; queue.removeAll()
-        let failedConnections = connectionWaiters; connectionWaiters.removeAll()
         decoder = PacketDecoder()
         frames = MMAFrameQueue()
         let oldChannel = channel
@@ -154,6 +183,12 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
         firmware = ""; peerFirmware = nil; productID = nil
         status = message
         log?(message)
+        failRequests(message)
+    }
+    private func failRequests(_ message: String) {
+        let failedPending = pending; pending = nil
+        let failedQueue = queue; queue.removeAll()
+        let failedConnections = connectionWaiters; connectionWaiters.removeAll()
         failedConnections.forEach { $0.resume(throwing: FirmwareFailure(message)) }
         failedPending?.completion(nil)
         failedQueue.forEach { $0.completion(nil) }
@@ -251,7 +286,7 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
         }
     }
     public func refresh() {
-        guard connected, !changing, !updatingFirmware, pending == nil, queue.isEmpty else { return }
+        guard connected, !connecting, !changing, !updatingFirmware, pending == nil, queue.isEmpty else { return }
         request(0x02, [0xff,0xff,0xff,0xff]) { [weak self] packet in
             guard let self, let packet else { return }
             for item in parseTLVs(packet.payload, idWidth: 1) {
@@ -293,8 +328,11 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
     @MainActor private func ensureControlConnection() async throws {
         if connected, channel?.isOpen() == true { return }
         guard !stopped else { throw FirmwareFailure("Open the earbuds controls before changing settings.") }
+        guard !controlConnectionTimedOut else {
+            throw FirmwareFailure("The earbuds' control connection is still pending. Restart your earbuds using their charging case, then reconnect them to this Mac.")
+        }
         if updateBluetoothConnection() == nil {
-            guard let paired = (IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice])?.first(where: {
+            guard let paired = pairedDevices().first(where: {
                 matchesBuds($0)
             }), paired.openConnection() == kIOReturnSuccess else {
                 throw FirmwareFailure("Connect REDMI Buds 8 Pro to this Mac in Bluetooth settings.")
@@ -514,7 +552,7 @@ public final class BudsController: NSObject, ObservableObject, IOBluetoothRFCOMM
         setNoise(NoiseSetting(mode: mode, strength: strength), manualANC: mode == .anc)
     }
     public func setNoise(_ setting: NoiseSetting, manualANC: Bool = false) {
-        guard connected, noise != nil, !changing, !updatingFirmware else { return }
+        guard connected, !connecting, noise != nil, !changing, !updatingFirmware else { return }
         changing = true; lastError = nil
         if manualANC {
             // Xiaomi's adaptive mode overrides manual strength. Read it before changing anything.

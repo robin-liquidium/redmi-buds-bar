@@ -170,6 +170,14 @@ The Mac app now shares the official discovery/download service and validated MMA
 On 8 October 2026, the Mac read both versions as 1.2.3.7, discovered and validated the official 3,093,524-byte image, and issued read-only E1/E2 queries. E2 rejected readiness with 0x12 (buds must be in the open charging case), as expected for that device state. No E3 entry, E5 transfer, E6 completion or reboot was sent in this Mac check. `budsctl firmware-check` never installs firmware. Nineteen tests passed, including multiple MTUs, acknowledgment ordering and failed-write queue reset. Full Mac OTA transfer and physical cancellation/recovery remain unverified; a newer official release is needed for a normal update test.
 
 
+### Pending RFCOMM opens — 9 October 2026
+
+On the installed 0.4.0 Mac app, a channel-28 open did not complete within ten seconds. The app discarded the pending channel and retried. macOS logged `Already connected to device`, then `OI_RFCOMM_Connect failed (status=911)` after the app restarted; 911 is `OI_RFCOMM_DLCI_EXISTS` in the [Open Interface status definitions](https://android.googlesource.com/platform/packages/modules/Bluetooth/+/a5a1f4f32268a9bdff15978dcf6126825a8e0c44/system/embdrv/sbc/decoder/include/oi_status.h). Disconnecting the iPhone did not resolve the Mac failure. A normal `IOBluetoothDevice.closeConnection()` disconnected audio profiles but left the baseband/control channel stuck. The original reason the first open hung is not established, so this does not prove a firmware regression.
+
+The Mac controller now retains an opening channel after its timeout, fails outstanding operations, and offers earbud-restart instructions instead of starting duplicate opens. It accepts a late successful completion and resets on an actual Bluetooth disconnect. Duplicate SDP/open-completion callbacks cannot replace or close the current channel. Tests exercise these paths using fake IOBluetooth devices/channels without hardware or setting writes.
+
+Live read-only verification after the case restart succeeded with only the right earbud available: firmware 1.2.3.7, right battery 100%, left/case battery unavailable, noise mode Off. The installed patched app repeatedly reopened, read and released channel 28 without timeouts, and recovered automatically from the physical case restart at 2026-10-09T15:24:59Z. The device-info peer-version bytes were `10 01` with the other bud absent; this does not verify the missing earbud's firmware. The original stall may involve single-earbud use or firmware behavior, but that trigger remains unproven.
+
 ## Earbud settings (2717/50E3, firmware 1.2.3.7)
 
 Independent Mac RFCOMM and iPhone authenticated BLE reads on 8 October 2026 agree:

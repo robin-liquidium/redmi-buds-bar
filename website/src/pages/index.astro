@@ -2,6 +2,8 @@
 import Page from '../layouts/Page.astro';
 import releases from '../../public/releases.json';
 const latest = releases[0] as { version: string } | undefined;
+const [major, minor] = latest?.version.split('.').map(Number) ?? [0, 0];
+const hasIPhonePackage = major > 0 || minor >= 5;
 ---
 
 <Page>
@@ -142,7 +144,7 @@ const latest = releases[0] as { version: string } | undefined;
       <div>
         <p>
           Tested with the <strong>Chinese variant</strong> on firmware{' '}
-          <strong>1.2.3.6</strong>. Requires macOS Sonoma 14 or later. Other
+          <strong>1.2.3.6 and 1.2.3.7</strong>. Requires macOS Sonoma 14 or later. Other
           models and regional variants haven’t been verified.
         </p>
         <p>
@@ -150,9 +152,17 @@ const latest = releases[0] as { version: string } | undefined;
           click the earbuds icon. That’s it.
         </p>
         <p class="small">
-          Controls noise modes and battery display. EQ, gestures, spatial audio,
-          and firmware updates stay in Xiaomi’s app.
+          Noise controls, battery levels, gestures, EQ, supported audio settings,
+          and official firmware updates. New setting writes, fit tests, and find
+          sounds still need on-device user testing.
         </p>
+        {latest && hasIPhonePackage && (
+          <p class="small">
+            Also available for iPhone with iOS 26 or later:
+            {' '}<a href={`https://github.com/robin-liquidium/redmi-buds-bar/releases/download/v${latest.version}/RedmiBuds-${latest.version}-unsigned.ipa`}>download the unsigned IPA</a>.
+            {' '}<a href="https://github.com/robin-liquidium/redmi-buds-bar/blob/main/iOS/SIDELOADING.md">Your own signing is required</a> before installation.
+          </p>
+        )}
       </div>
     </section>
     <section class="install">

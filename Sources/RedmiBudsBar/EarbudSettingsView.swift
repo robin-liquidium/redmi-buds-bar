@@ -143,9 +143,18 @@ struct EarbudSettingsView: View {
                     findingTask = Task { @MainActor in
                         do {
                             try await Task.sleep(for: .seconds(30))
+                            // Wait for an in-flight setting change before requesting Stop.
+                            // Do not retry a sound command after it has been sent.
+                            for _ in 0..<10 {
+                                if !busy { break }
+                                try await Task.sleep(for: .milliseconds(500))
+                            }
+                            try Task.checkCancellation()
                             actionResult = try await buds.performEarbudAction(.stopFinding)
                         } catch is CancellationError {} catch { failure = error.localizedDescription }
                     }
+                } else if case .stopFinding = requested {
+                    findingTask?.cancel(); findingTask = nil
                 }
             } catch { failure = error.localizedDescription }
         }

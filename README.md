@@ -14,7 +14,7 @@ Requires macOS 14 or later. Public releases contain a universal app for Apple si
 
 ## iPhone app
 
-The native [iPhone app](iOS/README.md) uses direct Bluetooth LE for noise modes, ANC strength, transparency presets and battery levels. It includes one cycling Control Center button with a mode-specific icon, optional individual controls and Shortcuts actions. Official Xiaomi firmware discovery, download and installation work without an account; a complete 1.2.3.6 → 1.2.3.7 update was verified on the Chinese model. Requires iOS 26 or later. Future releases include a separate unsigned IPA with the controls extension; [sideloading requires your own signing and shared App Group](iOS/SIDELOADING.md). You can also build from Xcode. The Mac DMG is a separate download.
+The native [iPhone app](iOS/README.md) uses direct Bluetooth LE for noise modes, ANC strength, transparency presets and battery levels. It includes one cycling Control Center button with a mode-specific icon, optional individual controls and Shortcuts actions. Official Xiaomi firmware discovery, download and installation work without an account; a complete 1.2.3.6 → 1.2.3.7 update was verified on the Chinese model. Requires iOS 26 or later. Releases from 0.5.0 include a separate unsigned IPA with the controls extension; [sideloading requires your own signing and shared App Group](iOS/SIDELOADING.md). You can also build from Xcode. The Mac DMG is a separate download.
 
 ## Working features
 
@@ -32,6 +32,7 @@ The native [iPhone app](iOS/README.md) uses direct Bluetooth LE for noise modes,
 - Device state refresh on opening the popover and every 30 seconds.
 - Acknowledges device notifications and reads back the current mode.
 - Reconnects the control channel when the already-paired buds reconnect to the Mac.
+- Keeps a slow control-channel opening pending instead of repeatedly opening duplicate channels. If it stalls, the menu explains how to restart the buds; a late successful connection or Bluetooth reconnect restores controls automatically.
 - Checks Bluetooth connection status every 2 seconds, with 0.2 seconds of timer tolerance to help macOS save power. Battery and control polling stays at 30 seconds.
 - Confirms a mode change only after the earbuds acknowledge it and a separate query matches it.
 
@@ -77,7 +78,7 @@ The script builds a release executable, packages `outputs/RedmiBudsBar.app`, sig
 swift test
 ```
 
-Nineteen tests cover real captured packets, fragmentation, combined broadcasts, invalid lengths/trailers, battery sentinels, noise command encoding, playback stream updates, artwork replacement, and playback timing, firmware integrity and version validation, and serialized firmware-frame writes across different Bluetooth MTUs.
+Thirty-one Swift tests cover captured packets, fragmentation, combined broadcasts, invalid lengths/trailers, battery sentinels, noise commands, earbud settings, playback updates and timing, firmware integrity/version validation, serialized writes across Bluetooth MTUs, and pending connection recovery. Eleven Python tests cover release state and unsigned iPhone packaging.
 
 The `budsctl` executable shares the app's transport and protocol implementation. Quit the menu bar app before using it so two clients do not compete for the control channel.
 
@@ -96,7 +97,7 @@ The Codex Run action uses the same build script.
 ## Limits
 
 - Playback integration uses the private macOS MediaRemote framework through the bundled [MediaRemote Adapter](https://github.com/ungive/mediaremote-adapter). Future macOS updates may break it. Only media that apps publish to the system's Now Playing service is shown; controls depend on the source app's support.
-- EQ, gestures and spatial audio are not exposed. Smart ANC can be turned off automatically by the strength slider, but there is no separate smart ANC switch.
+- Earbud settings expose only fields supported by the verified model. Call answer/end/reject behavior and renaming are not configurable here.
 - Switching back to a mode preserves its last strength read during this app session. Before observing ANC/transparency in the current session, the defaults are the verified ANC value 19 and standard transparency 0.
 - A dash for the case means its battery is unavailable, not empty.
 - Reconnect handling is implemented; repeated sleep/wake and multipoint handoff behavior still need daily-use testing.
