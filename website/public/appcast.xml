@@ -9,6 +9,15 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         <description>Signed updates for Redmi Buds Bar.</description>
         <language>en</language>
         <item>
+            <title>0.5.0</title>
+            <pubDate>Fri, 09 Oct 2026 16:06:37 +0000</pubDate>
+            <sparkle:version>8</sparkle:version>
+            <sparkle:shortVersionString>0.5.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul><li>Keep pending Mac control connections after a timeout to prevent duplicate attempts, with clear recovery instructions.</li><li>Configure earbud gestures, noise-mode cycling, EQ and supported feature settings on Mac and iPhone, with independent readback after changes.</li><li>Add ear tip fit testing and find-earbud sound controls.</li><li>Provide an unsigned iPhone IPA with Control Center controls and instructions for signing it yourself.</li></ul>]]></description>
+            <enclosure url="https://github.com/robin-liquidium/redmi-buds-bar/releases/download/v0.5.0/RedmiBudsBar-0.5.0.zip" length="2194333" type="application/octet-stream" sparkle:edSignature="IKVF3kHSF9m2H1hj2z9QD1XpiJxl8sF1ZhKcuGMbR2tvMPXXN1SE1qLT5cq7fl74gvZtUD8xHNCrXDSp68UmAQ=="/>
+        </item>
+        <item>
             <title>0.4.0</title>
             <pubDate>Thu, 08 Oct 2026 07:16:49 +0000</pubDate>
             <sparkle:version>7</sparkle:version>
@@ -26,18 +35,9 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
             <description><![CDATA[<ul><li>Control music from the menu bar with artwork, track and artist details, and the source app.</li><li>Play, pause, skip tracks, return to the previous track, and seek without opening the music app.</li><li>Keep playback controls visually steady when pausing or resuming.</li><li>Reduce background resource use by loading controls on demand, releasing closed views and media caches, and reusing appropriately sized artwork.</li></ul>]]></description>
             <enclosure url="https://github.com/robin-liquidium/redmi-buds-bar/releases/download/v0.3.0/RedmiBudsBar-0.3.0.zip" length="1819945" type="application/octet-stream" sparkle:edSignature="NFP9jHcc+qbO2Ox+x18vr04R4aURvsBd9NvK3bCoYXLgSwyjRtUYQnwQS0cFcwnxFsjCS/dXbfyuJR9t3ytNAA=="/>
         </item>
-        <item>
-            <title>0.2.0</title>
-            <pubDate>Thu, 10 Sep 2026 09:22:27 +0000</pubDate>
-            <sparkle:version>5</sparkle:version>
-            <sparkle:shortVersionString>0.2.0</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <description><![CDATA[<ul><li>Show the menu bar icon only while REDMI Buds 8 Pro are connected, with a saved setting to always show it.</li><li>Detect Bluetooth connection changes every two seconds while keeping battery refreshes at 30 seconds.</li><li>Reopen the app to access controls and settings while the menu bar icon is hidden.</li></ul>]]></description>
-            <enclosure url="https://github.com/robin-liquidium/redmi-buds-bar/releases/download/v0.2.0/RedmiBudsBar-0.2.0.zip" length="1584593" type="application/octet-stream" sparkle:edSignature="73gyEjxrusA2M72hWpwRJc2zZ2wcbG2LCcfSRqOXiFBEvG2lpM/Uo/2lrPq04Fa+zMFZDUCD4TcEASJauGiGDg=="/>
-        </item>
     </channel>
 </rss>
 <!-- sparkle-signatures:
-edSignature: 7YBh6SrkJl4biAsUWFWUpA+PvwMb4Rfb/3EkjVT+lr72ipH9tsWOl7Kwt0y7wF0GvDbIkKXomXhZDJAKgPv+Dg==
-length: 3865
+edSignature: b0vsgNzMbV9OptH2S3QdJi/WsmzwqBM0JX/3MTbL0siAl+4s+h7wdZf7xdKnjs9U77QE4ThPT71fmpW4AfOICQ==
+length: 4001
 -->
