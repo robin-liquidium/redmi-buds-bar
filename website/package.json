@@ -9,8 +9,8 @@
     "deploy": "bun run build && wrangler deploy",
     "lint": "bun lint --no-script",
     "lint:fix": "bun lint --no-script --fix",
-    "fmt": "bun fmt --no-script",
-    "fmt:check": "bun fmt --check --no-script"
+    "fmt": "bun fmt --no-script && prettier --write 'src/**/*.astro'",
+    "fmt:check": "bun fmt --check --no-script && prettier --check 'src/**/*.astro'"
   },
   "dependencies": {
     "astro": "7.3.2"
