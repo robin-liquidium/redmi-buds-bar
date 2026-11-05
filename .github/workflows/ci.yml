@@ -23,7 +23,15 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.4
-      - run: bun install --frozen-lockfile && bun run check && bun run build
+      - run: bun install --frozen-lockfile
+        working-directory: website
+      - run: bun run fmt:check
+        working-directory: website
+      - run: bun run lint
+        working-directory: website
+      - run: bun run check
+        working-directory: website
+      - run: bun run build
         working-directory: website
   secrets:
     runs-on: ubuntu-latest
