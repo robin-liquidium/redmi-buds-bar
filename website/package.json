@@ -5,14 +5,19 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "check": "astro check",
-    "deploy": "bun run build && wrangler deploy"
+    "check": "bun check --no-script && astro check",
+    "deploy": "bun run build && wrangler deploy",
+    "lint": "bun lint --no-script",
+    "lint:fix": "bun lint --no-script --fix",
+    "fmt": "bun fmt --no-script",
+    "fmt:check": "bun fmt --check --no-script"
   },
   "dependencies": {
     "astro": "7.3.2"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",
+    "bun": "1.4.4-canary.20261102.1",
     "prettier": "3.9.6",
     "prettier-plugin-astro": "1.0.0",
     "typescript": "6",
