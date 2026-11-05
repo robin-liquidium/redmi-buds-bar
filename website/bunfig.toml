@@ -1,0 +1,7 @@
+[fmt]
+ignorePatterns = ["dist", ".astro", ".wrangler"]
+
+[lint]
+typeAware = true
+maxWarnings = 0
+ignorePatterns = ["dist", ".astro", ".wrangler"]
