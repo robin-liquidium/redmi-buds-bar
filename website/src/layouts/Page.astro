@@ -21,8 +21,20 @@ const {
     <meta name="theme-color" content="#faf6ee" />
     <title>{title}</title>
     <link rel="icon" href="/icon.png" type="image/png" />
-    <link rel="preload" href={regularFont} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={headingFont} as="font" type="font/woff2" crossorigin />
+    <link
+      rel="preload"
+      href={regularFont}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href={headingFont}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

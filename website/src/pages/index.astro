@@ -66,7 +66,10 @@ const hasIPhonePackage = major > 0 || minor >= 5;
           <title id="screenshot-title">Redmi Buds Bar showing battery levels, noise controls, and the noise cancelling strength slider.</title>
           <defs>
             <clipPath id="popover-outline" clipPathUnits="userSpaceOnUse">
-              <path id="popover-shape" d="M54 89 H344 C357 89 361 82 367 75 Q370 72 373 72 Q377 72 380 75 C386 82 390 89 404 89 H694 A30 30 0 0 1 724 119 V906 A30 30 0 0 1 694 936 H54 A30 30 0 0 1 24 906 V119 A30 30 0 0 1 54 89 Z" />
+              <path
+                id="popover-shape"
+                d="M54 89 H344 C357 89 361 82 367 75 Q370 72 373 72 Q377 72 380 75 C386 82 390 89 404 89 H694 A30 30 0 0 1 724 119 V906 A30 30 0 0 1 694 936 H54 A30 30 0 0 1 24 906 V119 A30 30 0 0 1 54 89 Z"
+              />
             </clipPath>
           </defs>
           <image
@@ -144,23 +147,31 @@ const hasIPhonePackage = major > 0 || minor >= 5;
       <div>
         <p>
           Tested with the <strong>Chinese variant</strong> on firmware{' '}
-          <strong>1.2.3.6 and 1.2.3.7</strong>. Requires macOS Sonoma 14 or later. Other
-          models and regional variants haven’t been verified.
+          <strong>1.2.3.6 and 1.2.3.7</strong>. Requires macOS Sonoma 14 or
+          later. Other models and regional variants haven’t been verified.
         </p>
         <p>
           Pair your earbuds in Bluetooth settings, open Redmi Buds Bar, and
           click the earbuds icon. That’s it.
         </p>
         <p class="small">
-          Noise controls, battery levels, gestures, EQ, supported audio settings,
-          and official firmware updates. New setting writes, fit tests, and find
-          sounds still need on-device user testing.
+          Noise controls, battery levels, gestures, EQ, supported audio
+          settings, and official firmware updates. New setting writes, fit
+          tests, and find sounds still need on-device user testing.
         </p>
         {latest && hasIPhonePackage && (
           <p class="small">
-            Also available for iPhone with iOS 26 or later:
-            {' '}<a href={`https://github.com/robin-liquidium/redmi-buds-bar/releases/download/v${latest.version}/RedmiBuds-${latest.version}-unsigned.ipa`}>download the unsigned IPA</a>.
-            {' '}<a href="https://github.com/robin-liquidium/redmi-buds-bar/blob/main/iOS/SIDELOADING.md">Your own signing is required</a> before installation.
+            Also available for iPhone with iOS 26 or later:{' '}
+            <a
+              href={`https://github.com/robin-liquidium/redmi-buds-bar/releases/download/v${latest.version}/RedmiBuds-${latest.version}-unsigned.ipa`}
+            >
+              download the unsigned IPA
+            </a>
+            .{' '}
+            <a href="https://github.com/robin-liquidium/redmi-buds-bar/blob/main/iOS/SIDELOADING.md">
+              Your own signing is required
+            </a>{' '}
+            before installation.
           </p>
         )}
       </div>
