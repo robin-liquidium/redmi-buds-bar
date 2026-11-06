@@ -1,0 +1,38 @@
+---
+import Page from '@robin-build/landing-kit/Page.astro';
+import type { Site } from '@robin-build/landing-kit/projects';
+import '@robin-build/landing-kit/design.css';
+import '../styles/site.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const repo = 'https://github.com/robin-liquidium/redmi-buds-bar';
+const site: Site = {
+  id: 'buds',
+  name: 'Redmi Buds Bar',
+  icon: '/icon.png',
+  themeColor: { light: '#f6f5f1', dark: '#0c1018' },
+  ogImage: 'https://buds.robin.build/images/menu.png',
+  nav: [
+    { label: 'Changelog', href: '/changelog' },
+    { label: 'GitHub', href: repo },
+  ],
+  footerLinks: [
+    { label: 'Privacy', href: '/privacy' },
+    { label: 'Help & feedback', href: `${repo}/issues` },
+  ],
+};
+const {
+  title = 'Redmi Buds Bar — Your buds. Your controls.',
+  description = 'Noise cancelling, transparency, and battery levels for REDMI Buds 8 Pro, right in your Mac menu bar. Free and open source.',
+} = Astro.props;
+---
+
+<Page site={site} title={title} description={description}>
+  <slot />
+  <Fragment slot="credits">
+    An independent app. Not affiliated with Xiaomi or Redmi.
+  </Fragment>
+</Page>
