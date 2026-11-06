@@ -9,15 +9,13 @@ const entries = releases as {
 ---
 
 <Site title="Changelog — Redmi Buds Bar">
-  <main id="main" class="prose">
-    <span class="eyebrow">A little better, bit by bit</span>
-    <h1>
-      What’s <em>new.</em>
-    </h1>
+  <main id="main" class="rb-prose rb-shell">
+    <h1>Changelog</h1>
+    <p class="rb-lede">What changed in each version of Redmi Buds Bar.</p>
     {entries.length ? (
       entries.map((release) => (
-        <article class="release">
-          <div class="release-heading">
+        <article class="rb-release">
+          <div class="rb-release-head">
             <h2>Version {release.version}</h2>
             <time datetime={release.date}>{release.date}</time>
           </div>
