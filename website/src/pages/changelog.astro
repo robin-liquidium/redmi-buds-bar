@@ -1,5 +1,5 @@
 ---
-import Page from '../layouts/Page.astro';
+import Site from '../layouts/Site.astro';
 import releases from '../../public/releases.json';
 const entries = releases as {
   version: string;
@@ -8,7 +8,7 @@ const entries = releases as {
 }[];
 ---
 
-<Page title="Changelog — Redmi Buds Bar">
+<Site title="Changelog — Redmi Buds Bar">
   <main id="main" class="prose">
     <span class="eyebrow">A little better, bit by bit</span>
     <h1>
@@ -42,4 +42,4 @@ const entries = releases as {
       </p>
     )}
   </main>
-</Page>
+</Site>

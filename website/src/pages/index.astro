@@ -1,6 +1,9 @@
 ---
-import Page from '../layouts/Page.astro';
-import DownloadIcon from '../components/DownloadIcon.astro';
+import Faq from '@robin-build/landing-kit/components/Faq.astro';
+import Features from '@robin-build/landing-kit/components/Features.astro';
+import Stats from '@robin-build/landing-kit/components/Stats.astro';
+import Site from '../layouts/Site.astro';
+import DownloadIcon from '@robin-build/landing-kit/components/DownloadIcon.astro';
 import releases from '../../public/releases.json';
 const latest = releases[0] as { version: string } | undefined;
 const [major, minor] = latest?.version.split('.').map(Number) ?? [0, 0];
@@ -37,9 +40,31 @@ const features = [
     text: 'Enable launch at login and let it live in your menu bar. Signed automatic updates keep it current.',
   },
 ];
+const faq = [
+  {
+    q: 'Which earbuds does it support?',
+    a: 'REDMI Buds 8 Pro, tested with the Chinese variant on firmware 1.2.3.6 and 1.2.3.7. Other models and regional variants haven’t been verified yet.',
+  },
+  {
+    q: 'How do I set it up?',
+    a: 'Pair your earbuds in Bluetooth settings, open Redmi Buds Bar and click the earbuds icon in your menu bar. That’s it. You need macOS Sonoma 14 or later.',
+  },
+  {
+    q: 'What can it control?',
+    a: 'Noise controls, battery levels, gestures, EQ, supported audio settings and official firmware updates. New setting writes, fit tests and find sounds still need testing on more earbuds.',
+  },
+  ...(latest && hasIPhonePackage
+    ? [
+        {
+          q: 'Is there an iPhone version?',
+          a: `Yes, for iOS 26 or later. <a href="${repo}/releases/download/v${latest.version}/RedmiBuds-${latest.version}-unsigned.ipa">Download the unsigned IPA</a>. You’ll <a href="${repo}/blob/main/iOS/SIDELOADING.md">sign it yourself</a> before installing.`,
+        },
+      ]
+    : []),
+];
 ---
 
-<Page>
+<Site>
   <main id="main">
     <section class="hero">
       <span class="eyebrow">
@@ -108,14 +133,7 @@ const features = [
       <h2>
         Everything that matters. <em>Nothing that doesn’t.</em>
       </h2>
-      <dl>
-        {stats.map((stat) => (
-          <div>
-            <dt>{stat.label}</dt>
-            <dd>{stat.value}</dd>
-          </div>
-        ))}
-      </dl>
+      <Stats items={stats} />
     </section>
 
     <section id="features" class="how">
@@ -126,15 +144,7 @@ const features = [
         </h2>
         <p>Everything your earbuds can do, without reaching for your phone.</p>
       </div>
-      <div class="features">
-        {features.map((feature) => (
-          <article>
-            <span class="feature-number">{feature.tag}</span>
-            <h3>{feature.title}</h3>
-            <p>{feature.text}</p>
-          </article>
-        ))}
-      </div>
+      <Features items={features} />
     </section>
 
     <section class="faq">
@@ -146,50 +156,7 @@ const features = [
           <em>Meet your Mac.</em>
         </h2>
       </div>
-      <div>
-        <details open>
-          <summary>Which earbuds does it support?</summary>
-          <p>
-            REDMI Buds 8 Pro, tested with the Chinese variant on firmware
-            1.2.3.6 and 1.2.3.7. Other models and regional variants haven’t been
-            verified yet.
-          </p>
-        </details>
-        <details>
-          <summary>How do I set it up?</summary>
-          <p>
-            Pair your earbuds in Bluetooth settings, open Redmi Buds Bar and
-            click the earbuds icon in your menu bar. That’s it. You need macOS
-            Sonoma 14 or later.
-          </p>
-        </details>
-        <details>
-          <summary>What can it control?</summary>
-          <p>
-            Noise controls, battery levels, gestures, EQ, supported audio
-            settings and official firmware updates. New setting writes, fit
-            tests and find sounds still need testing on more earbuds.
-          </p>
-        </details>
-        {latest && hasIPhonePackage && (
-          <details>
-            <summary>Is there an iPhone version?</summary>
-            <p>
-              Yes, for iOS 26 or later.{' '}
-              <a
-                href={`${repo}/releases/download/v${latest.version}/RedmiBuds-${latest.version}-unsigned.ipa`}
-              >
-                Download the unsigned IPA
-              </a>
-              . You’ll{' '}
-              <a href={`${repo}/blob/main/iOS/SIDELOADING.md`}>
-                sign it yourself
-              </a>{' '}
-              before installing.
-            </p>
-          </details>
-        )}
-      </div>
+      <Faq items={faq} openFirst />
     </section>
 
     <section class="install">
@@ -212,4 +179,4 @@ const features = [
       </p>
     </section>
   </main>
-</Page>
+</Site>
