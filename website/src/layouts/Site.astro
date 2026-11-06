@@ -3,34 +3,51 @@ import Page from '@robin-build/landing-kit/Page.astro';
 import type { Site } from '@robin-build/landing-kit/projects';
 import '@robin-build/landing-kit/design.css';
 import '../styles/site.css';
+import releases from '../../public/releases.json';
 
 interface Props {
   title?: string;
   description?: string;
+  noindex?: boolean;
 }
+const latest = releases[0] as { version: string } | undefined;
 const repo = 'https://github.com/robin-liquidium/redmi-buds-bar';
 const site: Site = {
   id: 'buds',
   name: 'Redmi Buds Bar',
+  url: 'https://buds.robin.build',
   icon: '/icon.png',
-  themeColor: { light: '#f6f5f1', dark: '#0c1018' },
-  ogImage: 'https://buds.robin.build/images/menu.png',
+  themeColor: { light: '#f1f2f4', dark: '#08090c' },
+  ogImage: 'https://buds.robin.build/images/og.png',
+  ogImageAlt: 'Redmi Buds Bar: your buds, in your menu bar.',
   nav: [
+    { label: 'Features', href: '/#features' },
+    { label: 'Questions', href: '/#questions' },
     { label: 'Changelog', href: '/changelog' },
     { label: 'GitHub', href: repo },
   ],
+  cta: { label: 'Download', href: latest ? '/download' : `${repo}/releases` },
   footerLinks: [
     { label: 'Privacy', href: '/privacy' },
+    { label: 'Changelog', href: '/changelog' },
     { label: 'Help & feedback', href: `${repo}/issues` },
   ],
+  app: {
+    operatingSystem: 'macOS 14 or later',
+    category: 'UtilitiesApplication',
+    downloadUrl: 'https://buds.robin.build/download',
+    version: latest?.version,
+    screenshot: '/images/menu.png',
+  },
 };
 const {
-  title = 'Redmi Buds Bar — Your buds. Your controls.',
-  description = 'Noise cancelling, transparency, and battery levels for REDMI Buds 8 Pro, right in your Mac menu bar. Free and open source.',
+  title = 'Redmi Buds Bar: control REDMI Buds 8 Pro from your Mac',
+  description = 'Switch noise cancelling and transparency and check battery levels of your REDMI Buds 8 Pro from the Mac menu bar. Free, open source, no account.',
+  noindex,
 } = Astro.props;
 ---
 
-<Page site={site} title={title} description={description}>
+<Page site={site} title={title} description={description} noindex={noindex}>
   <slot />
   <Fragment slot="credits">
     An independent app. Not affiliated with Xiaomi or Redmi.

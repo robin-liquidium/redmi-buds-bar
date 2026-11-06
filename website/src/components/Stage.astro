@@ -1,0 +1,48 @@
+---
+// The menu bar popover over a field of rings, like sound fading into quiet.
+const rings = Array.from({ length: 9 }, (_, index) => 90 + index * 74);
+---
+
+<div class="stage">
+  <svg
+    class="rings"
+    viewBox="0 0 1400 900"
+    aria-hidden="true"
+    preserveAspectRatio="xMidYMid slice"
+  >
+    {rings.map((radius) => (
+      <circle cx="700" cy="450" r={radius} />
+    ))}
+  </svg>
+  <svg
+    class="screenshot"
+    viewBox="20 67 708 873"
+    role="img"
+    aria-labelledby="screenshot-title"
+  >
+    <title id="screenshot-title">Redmi Buds Bar open in the menu bar, showing battery levels for each earbud and the case, noise control modes, and the noise cancelling strength slider.</title>
+    <defs>
+      <clipPath id="popover-outline" clipPathUnits="userSpaceOnUse">
+        <path
+          id="popover-shape"
+          d="M54 89 H344 C357 89 361 82 367 75 Q370 72 373 72 Q377 72 380 75 C386 82 390 89 404 89 H694 A30 30 0 0 1 724 119 V906 A30 30 0 0 1 694 936 H54 A30 30 0 0 1 24 906 V119 A30 30 0 0 1 54 89 Z"
+        ></path>
+      </clipPath>
+    </defs>
+    <image
+      href="/images/menu.png"
+      x="0"
+      y="0"
+      width="752"
+      height="968"
+      clip-path="url(#popover-outline)"
+    />
+    <use
+      href="#popover-shape"
+      fill="none"
+      stroke="#ffffff"
+      stroke-opacity="0.5"
+      stroke-width="1.2"
+    ></use>
+  </svg>
+</div>
