@@ -5,7 +5,7 @@
     "": {
       "name": "redmi-buds-bar-website",
       "dependencies": {
-        "@robin-build/landing-kit": "github:robin-liquidium/landing-kit#v0.3.1",
+        "@robin-build/landing-kit": "github:robin-liquidium/landing-kit#v0.3.2",
         "astro": "7.3.2",
       },
       "devDependencies": {
@@ -275,7 +275,7 @@
 
     "@prettier/parse-srcset": ["@prettier/parse-srcset@3.1.0", "", {}, "sha512-FIRv2rZotO9NP/r66taYqD1zICpPiBbrECqjKV/xqNotqDxF7fLzzUeK+1RSRx9Tenk0DajR/GcRmTJ2qtHaKQ=="],
 
-    "@robin-build/landing-kit": ["@robin-build/landing-kit@github:robin-liquidium/landing-kit#2d0f04a", { "peerDependencies": { "astro": ">=7" } }, "robin-liquidium-landing-kit-2d0f04a", "sha512-2SDho43r0cM0pZHuVuz8SORXucPZdQX5fi8EX0mrfhXtl5JJbeqAkbog7qcu6aSWUfQAYDe0HA/8zWV37I1plQ=="],
+    "@robin-build/landing-kit": ["@robin-build/landing-kit@github:robin-liquidium/landing-kit#890c7d4", { "peerDependencies": { "astro": ">=7" } }, "robin-liquidium-landing-kit-890c7d4", "sha512-cFiWX8zm2k/GbB2slMuocTsiI3PWJIPoYbahLZXPBuwMhGf9ESk3qJil+igAKayHKjWi8fP+673rcbwvU1CLRg=="],
 
     "@rolldown/binding-android-arm-eabi": ["@rolldown/binding-android-arm-eabi@1.2.7", "", { "os": "android", "cpu": "arm" }, "sha512-EypzgnYCwyVY4NDHKzGmNJT5b+XaQEBniHxsMdeIQLB/tcCzZnhqrzHpZFbX9iaxx+5RiB8caATBtfvZP7zVxQ=="],
 
