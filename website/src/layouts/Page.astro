@@ -18,7 +18,16 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#faf6ee" />
+    <meta
+      name="theme-color"
+      content="#f6f5f1"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#0c1018"
+      media="(prefers-color-scheme: dark)"
+    />
     <title>{title}</title>
     <link rel="icon" href="/icon.png" type="image/png" />
     <link
@@ -63,7 +72,8 @@ const {
       <footer>
         <span>
           Made by <a href="https://robin.build">Robin</a>. Also behind{' '}
-          <a href="https://dayline.robin.build">Dayline</a>.
+          <a href="https://dayline.robin.build">Dayline</a> and{' '}
+          <a href="https://stillmic.robin.build">Stillmic</a>.
         </span>
         <div>
           <a href="/privacy">Privacy</a>

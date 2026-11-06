@@ -1,62 +1,74 @@
 ---
 import Page from '../layouts/Page.astro';
+import DownloadIcon from '../components/DownloadIcon.astro';
 import releases from '../../public/releases.json';
 const latest = releases[0] as { version: string } | undefined;
 const [major, minor] = latest?.version.split('.').map(Number) ?? [0, 0];
 const hasIPhonePackage = major > 0 || minor >= 5;
+const repo = 'https://github.com/robin-liquidium/redmi-buds-bar';
+const download = latest ? '/download' : `${repo}/releases`;
+
+const stats = [
+  { value: '20', label: 'Noise cancelling strengths to choose from' },
+  { value: '3', label: 'Transparency modes: Regular, Voice, Ambient' },
+  { value: '1 click', label: 'To switch modes from anywhere on your Mac' },
+  { value: '0', label: 'Accounts, analytics or phones needed' },
+];
+
+const features = [
+  {
+    tag: '01 / Focus',
+    title: 'Find your quiet.',
+    text: 'Switch noise cancelling on and dial in the strength with 20 manual positions. From a little less noise to a lot more focus.',
+  },
+  {
+    tag: '02 / Listen',
+    title: 'Let the world in.',
+    text: 'Choose Regular, Voice or Ambient transparency, or turn noise control off. Your earbuds confirm every change.',
+  },
+  {
+    tag: '03 / Glance',
+    title: 'Keep an eye on battery.',
+    text: 'Check each earbud at a glance. The case level appears when your earbuds report it. No phone required.',
+  },
+  {
+    tag: '04 / Settle in',
+    title: 'Ready when you are.',
+    text: 'Enable launch at login and let it live in your menu bar. Signed automatic updates keep it current.',
+  },
+];
 ---
 
 <Page>
   <main id="main">
     <section class="hero">
-      <div class="eyebrow">
+      <span class="eyebrow">
         <span class="dot"></span> A little app for your Mac
-      </div>
+      </span>
       <h1>
         Your buds.
         <br />
         Your <em>controls.</em>
       </h1>
       <p class="intro">
-        Good earbuds deserve a place on your Mac.
-        <br class="desktop" /> Noise cancelling, transparency, and battery
-        levels.
-        <br class="desktop" /> Just a click away in your menu bar.
+        Noise cancelling, transparency and battery levels
+        <br class="desktop" /> for your REDMI Buds, one click away in your menu
+        bar.
       </p>
       <div class="actions">
-        <a
-          class="button primary"
-          href={
-            latest
-              ? '/download'
-              : 'https://github.com/robin-liquidium/redmi-buds-bar/releases'
-          }
-        >
-          <svg
-            width="19"
-            height="19"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            aria-hidden="true"
-          >
-            <path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5" />
-          </svg>
+        <a class="button primary" href={download}>
+          <DownloadIcon />
           {latest ? 'Download for Mac' : 'Get the first release'}
         </a>
-        <a class="text-link" href="#how-it-works">
-          Take a closer look
+        <a class="text-link" href="#features">
+          See what it does
         </a>
       </div>
       <p class="small">
         Free & open source · macOS 14+ · Apple silicon & Intel
         {latest && ` · v${latest.version}`}
       </p>
-      <div class="product-stage" aria-label="Screenshot of Redmi Buds Bar">
-        <div class="stage-label">
-          <span class="tiny-line"></span> Everything you need. Right here.
-        </div>
+      <div class="stage">
         <svg
           class="screenshot"
           viewBox="20 67 708 873"
@@ -83,59 +95,49 @@ const hasIPhonePackage = major > 0 || minor >= 5;
           <use
             href="#popover-shape"
             fill="none"
-            stroke="#253a42"
-            stroke-opacity="0.16"
+            stroke="#ffffff"
+            stroke-opacity="0.5"
             stroke-width="1.2"
           />
         </svg>
-        <span class="stage-note">Less reaching for your phone.</span>
       </div>
     </section>
-    <section id="how-it-works" class="features">
-      <div class="section-heading">
+
+    <section class="stats" aria-label="At a glance">
+      <span class="eyebrow">At a glance</span>
+      <h2>
+        Everything that matters. <em>Nothing that doesn’t.</em>
+      </h2>
+      <dl>
+        {stats.map((stat) => (
+          <div>
+            <dt>{stat.label}</dt>
+            <dd>{stat.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <section id="features" class="how">
+      <div class="center">
         <span class="eyebrow">Small app. Everyday useful.</span>
         <h2>
-          Set the sound.
-          <br />
-          <em>Stay in your flow.</em>
+          Set the sound. <em>Stay in your flow.</em>
         </h2>
+        <p>Everything your earbuds can do, without reaching for your phone.</p>
       </div>
-      <div class="feature-grid">
-        <article>
-          <span class="feature-number">01 / Focus</span>
-          <h3>Find your quiet.</h3>
-          <p>
-            Switch noise cancelling on and dial in the strength with 20 manual
-            positions. From a little less noise to a lot more focus.
-          </p>
-        </article>
-        <article>
-          <span class="feature-number">02 / Listen</span>
-          <h3>Let the world in.</h3>
-          <p>
-            Choose Regular, Voice, or Ambient transparency. Or turn noise
-            control off. Your earbuds confirm every change.
-          </p>
-        </article>
-        <article>
-          <span class="feature-number">03 / Glance</span>
-          <h3>Keep an eye on battery.</h3>
-          <p>
-            Check each earbud at a glance. The case level appears when your
-            earbuds report it. No phone required.
-          </p>
-        </article>
-        <article>
-          <span class="feature-number">04 / Settle in</span>
-          <h3>Ready when you are.</h3>
-          <p>
-            Enable launch at login and let it live in your menu bar. Signed
-            automatic updates keep it current.
-          </p>
-        </article>
+      <div class="features">
+        {features.map((feature) => (
+          <article>
+            <span class="feature-number">{feature.tag}</span>
+            <h3>{feature.title}</h3>
+            <p>{feature.text}</p>
+          </article>
+        ))}
       </div>
     </section>
-    <section class="compatibility">
+
+    <section class="faq">
       <div>
         <span class="eyebrow">Made for these buds</span>
         <h2>
@@ -145,58 +147,65 @@ const hasIPhonePackage = major > 0 || minor >= 5;
         </h2>
       </div>
       <div>
-        <p>
-          Tested with the <strong>Chinese variant</strong> on firmware{' '}
-          <strong>1.2.3.6 and 1.2.3.7</strong>. Requires macOS Sonoma 14 or
-          later. Other models and regional variants haven’t been verified.
-        </p>
-        <p>
-          Pair your earbuds in Bluetooth settings, open Redmi Buds Bar, and
-          click the earbuds icon. That’s it.
-        </p>
-        <p class="small">
-          Noise controls, battery levels, gestures, EQ, supported audio
-          settings, and official firmware updates. New setting writes, fit
-          tests, and find sounds still need on-device user testing.
-        </p>
-        {latest && hasIPhonePackage && (
-          <p class="small">
-            Also available for iPhone with iOS 26 or later:{' '}
-            <a
-              href={`https://github.com/robin-liquidium/redmi-buds-bar/releases/download/v${latest.version}/RedmiBuds-${latest.version}-unsigned.ipa`}
-            >
-              download the unsigned IPA
-            </a>
-            .{' '}
-            <a href="https://github.com/robin-liquidium/redmi-buds-bar/blob/main/iOS/SIDELOADING.md">
-              Your own signing is required
-            </a>{' '}
-            before installation.
+        <details open>
+          <summary>Which earbuds does it support?</summary>
+          <p>
+            REDMI Buds 8 Pro, tested with the Chinese variant on firmware
+            1.2.3.6 and 1.2.3.7. Other models and regional variants haven’t been
+            verified yet.
           </p>
+        </details>
+        <details>
+          <summary>How do I set it up?</summary>
+          <p>
+            Pair your earbuds in Bluetooth settings, open Redmi Buds Bar and
+            click the earbuds icon in your menu bar. That’s it. You need macOS
+            Sonoma 14 or later.
+          </p>
+        </details>
+        <details>
+          <summary>What can it control?</summary>
+          <p>
+            Noise controls, battery levels, gestures, EQ, supported audio
+            settings and official firmware updates. New setting writes, fit
+            tests and find sounds still need testing on more earbuds.
+          </p>
+        </details>
+        {latest && hasIPhonePackage && (
+          <details>
+            <summary>Is there an iPhone version?</summary>
+            <p>
+              Yes, for iOS 26 or later.{' '}
+              <a
+                href={`${repo}/releases/download/v${latest.version}/RedmiBuds-${latest.version}-unsigned.ipa`}
+              >
+                Download the unsigned IPA
+              </a>
+              . You’ll{' '}
+              <a href={`${repo}/blob/main/iOS/SIDELOADING.md`}>
+                sign it yourself
+              </a>{' '}
+              before installing.
+            </p>
+          </details>
         )}
       </div>
     </section>
+
     <section class="install">
       <h2>
-        One less reason
-        <br />
-        to <em>pick up your phone.</em>
+        One less reason <br />
+        <em>to pick up your phone.</em>
       </h2>
-      <a
-        class="button primary"
-        href={
-          latest
-            ? '/download'
-            : 'https://github.com/robin-liquidium/redmi-buds-bar/releases'
-        }
-      >
+      <a class="button primary" href={download}>
+        <DownloadIcon />
         {latest ? 'Download Redmi Buds Bar' : 'View releases'}
       </a>
       {latest && (
-        <>
-          <p class="small">Or, if Homebrew is your thing:</p>
+        <p class="small">
+          Or with Homebrew:
           <code>brew install --cask robin-liquidium/tap/redmi-buds-bar</code>
-        </>
+        </p>
       )}
       <p class="small">
         No account. No analytics. Just your buds and your Mac.
