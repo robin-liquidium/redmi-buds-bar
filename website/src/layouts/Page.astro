@@ -1,6 +1,6 @@
 ---
-import regularFont from '../assets/fonts/satoma-sans-400.woff2?url';
-import headingFont from '../assets/fonts/satoma-sans-600.woff2?url';
+import regularFont from '../assets/fonts/satoma-sans-400-latin.woff2?url';
+import headingFont from '../assets/fonts/satoma-sans-600-latin.woff2?url';
 import '../styles/global.css';
 interface Props {
   title?: string;
@@ -56,9 +56,7 @@ const {
         </a>
         <nav aria-label="Main navigation">
           <a href="/changelog">Changelog</a>
-          <a href="https://github.com/robin-liquidium/redmi-buds-bar">
-            GitHub <span aria-hidden="true">↗</span>
-          </a>
+          <a href="https://github.com/robin-liquidium/redmi-buds-bar">GitHub</a>
         </nav>
       </header>
       <slot />
@@ -70,7 +68,7 @@ const {
         <div>
           <a href="/privacy">Privacy</a>
           <a href="https://github.com/robin-liquidium/redmi-buds-bar/issues">
-            Help & feedback ↗
+            Help & feedback
           </a>
         </div>
         <p>An independent app. Not affiliated with Xiaomi or Redmi.</p>
