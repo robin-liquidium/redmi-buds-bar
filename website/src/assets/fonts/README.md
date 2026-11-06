@@ -1,6 +1,6 @@
 # Satoma Sans
 
-Satoma Sans 0.301 is a modified version of Albert Sans, distributed under the SIL Open Font License 1.1. This site embeds the regular (400), medium (500), and semibold (600) WOFF2 files.
+Satoma Sans 0.302 is a modified version of Albert Sans, distributed under the SIL Open Font License 1.1. This site embeds the regular (400), medium (500), and semibold (600) WOFF2 files, split into Latin and extended-Latin subsets so browsers fetch only what a page uses.
 
 Copyright 2021 The Albert Sans Project Authors (https://github.com/usted/Albert-Sans).
 
